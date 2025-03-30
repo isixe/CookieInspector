@@ -33,7 +33,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
-import type { ParsedCookie, SavedCookieEntry } from '@/types/cookie'
+import type { CookieType, ParsedCookie, SavedCookieEntry } from '@/types/cookie'
 import { getStringType, getTypeColor } from '@/utils/stringType'
 import {
   Check,
@@ -89,6 +89,40 @@ export default function SavedCookies(props: {
   const [selectedCookiesEntry, setSelectedCookiesEntry] = useState<
     SavedCookieEntry | null | undefined
   >(null)
+
+  useEffect(() => {
+    const selectedCookieData = selectedCookie
+      ? savedCookies.find((cookie) => cookie.id === selectedCookie)
+      : null
+    setSelectedCookiesEntry(selectedCookieData)
+  }, [savedCookies, selectedCookie])
+
+  useEffect(() => {
+    if (!editDialogOpen) {
+      // Reset form values when dialog closes without saving
+      setCookieEditId('')
+      setEditName('')
+      setEditTags('')
+      setEditDescription('')
+      setEditCookieString('')
+      setEditParsedCookies([])
+      return
+    }
+
+    if (cookieEditId) {
+      // Load values when dialog opens
+      const cookieEntry = savedCookies.find(
+        (cookie) => cookie.id === cookieEditId
+      )
+      if (cookieEntry) {
+        setEditName(cookieEntry.name)
+        setEditTags(cookieEntry.tags.join(','))
+        setEditDescription(cookieEntry.description || '')
+        setEditCookieString(cookieEntry.originCookieString)
+        setEditParsedCookies([...cookieEntry.parsedCookies])
+      }
+    }
+  }, [editDialogOpen, cookieEditId, savedCookies])
 
   // Filter saved cookies based on search term
   const filteredCookies = useMemo(() => {
@@ -146,7 +180,7 @@ export default function SavedCookies(props: {
     setDetailsOpen(true)
   }
 
-  const handleDeleteClick = (id: string) => {
+  const handleOneRecordDeleteClick = (id: string) => {
     setCookieToDelete(id)
     setDeleteConfirmOpen(true)
   }
@@ -157,6 +191,13 @@ export default function SavedCookies(props: {
       setCookieToDelete(null)
     }
     setDeleteConfirmOpen(false)
+  }
+
+  const toggleRowExpansion = (id: string) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }))
   }
 
   // Helper function for copy button feedback
@@ -214,87 +255,101 @@ export default function SavedCookies(props: {
     setEditDialogOpen(false)
   }
 
-  useEffect(() => {
-    const selectedCookieData = selectedCookie
-      ? savedCookies.find((cookie) => cookie.id === selectedCookie)
-      : null
-    setSelectedCookiesEntry(selectedCookieData)
-  }, [savedCookies, selectedCookie])
-
-  const handleCookieStringChange = (value: string) => {
+  const preUpdateEditCookieString = (value: string) => {
     setEditCookieString(value)
     // Parse the cookie string and update the parsed cookies state
     const parsed: ParsedCookie[] = value.split(';').map((cookie, index) => {
-      const [name, value] = cookie.trim().split('=')
-      //TODO: subCookies parser
+      const name = cookie.split('=')[0]
+      const value = cookie.substring(cookie.indexOf('=') + 1)
+
+      let subValues: { name: string; value: string; type: CookieType }[] = []
+      if (cookie.indexOf('&') > 0) {
+        subValues = cookie
+          .split('&')
+          .map((subCookie) => {
+            const [name, value] = subCookie.split('=')
+            if (name) {
+              return {
+                name,
+                value,
+                type: getStringType(value)
+              }
+            }
+          })
+          .filter((subValue) => subValue !== undefined)
+      }
 
       return {
-        id: cookieEditId,
+        id: `${cookieEditId}-row-${index}`,
         name: name || '',
         value: value || '',
         type: getStringType(value),
-        subValues: []
+        subValues
       }
     })
     setEditParsedCookies(parsed)
   }
 
-  const handleCookieValueChange = (id: string, value: string) => {
-    setEditParsedCookies((prevCookies: ParsedCookie[]) =>
-      //TODO: handle subValue change
-      prevCookies.map((prev) => (prev.id === id ? { ...prev, value } : prev))
-    )
+  const preUpdateEditRowCookieValue = (rowId: string, value: string) => {
+    const cookieString = editParsedCookies
+      .map((row) => {
+        if (row.id === rowId) {
+          return `${row.name}=${value}`
+        }
+        return `${row.name}=${row.value}`
+      })
+      .join(';')
 
     // Update cookie string when individual cookie value changes
-    setEditCookieString(
-      editParsedCookies
-        .map((cookie) => {
-          if (cookie.id === id) {
-            return `${cookie.name}=${value}`
-          }
-          return `${cookie.name}=${cookie.value}`
-        })
-        .join(';')
-    )
+    setEditCookieString(cookieString)
+
+    const parsedCookie: ParsedCookie[] = cookieString
+      .split(';')
+      .map((rowCookie, index) => {
+        const name = rowCookie.split('=')[0]
+        const value = rowCookie.substring(rowCookie.indexOf('=') + 1)
+
+        let subValues: { name: string; value: string; type: CookieType }[] = []
+        if (rowCookie.indexOf('&') > 0) {
+          subValues = rowCookie
+            .split('&')
+            .map((subCookie) => {
+              const [name, value] = subCookie.split('=')
+              if (name) {
+                return {
+                  name,
+                  value,
+                  type: getStringType(value)
+                }
+              }
+            })
+            .filter((subValue) => subValue !== undefined)
+        }
+
+        return {
+          id: `${cookieEditId}-row-${index}`,
+          name: name || '',
+          value: value || '',
+          type: getStringType(value),
+          subValues
+        }
+      })
+
+    setEditParsedCookies(parsedCookie)
   }
 
-  useEffect(() => {
-    if (!editDialogOpen) {
-      // Reset form values when dialog closes without saving
-      setCookieEditId('')
-      setEditName('')
-      setEditTags('')
-      setEditDescription('')
-      setEditCookieString('')
-      setEditParsedCookies([])
-      return
-    }
-
-    if (cookieEditId) {
-      // Load values when dialog opens
-      const cookieEntry = savedCookies.find(
-        (cookie) => cookie.id === cookieEditId
-      )
-      if (cookieEntry) {
-        setEditName(cookieEntry.name)
-        setEditTags(cookieEntry.tags.join(','))
-        setEditDescription(cookieEntry.description || '')
-        setEditCookieString(cookieEntry.originCookieString)
-        setEditParsedCookies([...cookieEntry.parsedCookies])
-      }
-    }
-  }, [editDialogOpen, cookieEditId, savedCookies])
-
-  const toggleRowExpansion = (id: string) => {
-    setExpandedRows((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }))
+  const preDeleteEditRowCookie = (rowId: string) => {
+    const newParsedCookies = editParsedCookies.filter((row) => row.id !== rowId)
+    setEditParsedCookies(newParsedCookies)
+    const newCookieString = newParsedCookies
+      .map((row) => `${row.name}=${row.value}`)
+      .join(';')
+    setEditCookieString(newCookieString)
   }
 
-  const handleSubCookieValueChange = (
+  const preUpdateEditOneSubCookieValue = (
     id: string,
-    updateSubValue: string,
+    newSubValue: string,
     subValueIndex: number
   ) => {
     const updatedCookies = editParsedCookies.map((cookie) => {
@@ -307,8 +362,8 @@ export default function SavedCookies(props: {
         if (index == subValueIndex) {
           return {
             ...subValue,
-            value: updateSubValue,
-            type: getStringType(updateSubValue)
+            value: newSubValue,
+            type: getStringType(newSubValue)
           }
         }
         return subValue
@@ -348,7 +403,7 @@ export default function SavedCookies(props: {
     setEditCookieString(newCookieString)
   }
 
-  const deleteEditOneSubCookie = (id: string, subValueIndex: number) => {
+  const preDeleteEditOneSubCookie = (id: string, subValueIndex: number) => {
     const updatedCookies = editParsedCookies.map((cookie) => {
       if (cookie.id !== id) {
         return cookie
@@ -518,7 +573,7 @@ export default function SavedCookies(props: {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteClick(entry.id)}
+                          onClick={() => handleOneRecordDeleteClick(entry.id)}
                           title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -781,7 +836,6 @@ export default function SavedCookies(props: {
         open={editDialogOpen}
         onOpenChange={(open) => {
           setEditDialogOpen(open)
-          // If dialog is closing, we don't need to do anything as the useEffect will handle cleanup
         }}
       >
         <DialogContent className="mx-auto flex max-h-[80vh] w-[90%] flex-col sm:max-w-3xl">
@@ -828,7 +882,7 @@ export default function SavedCookies(props: {
                 id="cookie-edit-string"
                 className="font-mono text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={editCookieString}
-                onChange={(e) => handleCookieStringChange(e.target.value)}
+                onChange={(e) => preUpdateEditCookieString(e.target.value)}
               />
             </div>
             <div className="flex-1">
@@ -842,6 +896,7 @@ export default function SavedCookies(props: {
                       <TableHead>Name</TableHead>
                       <TableHead>Value</TableHead>
                       <TableHead>Type</TableHead>
+                      <TableHead className="w-[60px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -856,9 +911,9 @@ export default function SavedCookies(props: {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Input
-                                value={cookie.value}
+                                value={cookie.value || ''}
                                 onChange={(e) =>
-                                  handleCookieValueChange(
+                                  preUpdateEditRowCookieValue(
                                     cookie.id,
                                     e.target.value
                                   )
@@ -892,6 +947,17 @@ export default function SavedCookies(props: {
                             <Badge className={getTypeColor(cookie.type)}>
                               {cookie.type}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                preDeleteEditRowCookie(cookie.id)
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                         {cookie.subValues && expandedRows[cookie.id] && (
@@ -928,7 +994,7 @@ export default function SavedCookies(props: {
                                           <Input
                                             value={subValue.value}
                                             onChange={(e) =>
-                                              handleSubCookieValueChange(
+                                              preUpdateEditOneSubCookieValue(
                                                 cookie.id,
                                                 e.target.value,
                                                 index
@@ -951,7 +1017,7 @@ export default function SavedCookies(props: {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => {
-                                              deleteEditOneSubCookie(
+                                              preDeleteEditOneSubCookie(
                                                 cookie.id,
                                                 index
                                               )
