@@ -918,7 +918,7 @@ export default function SavedCookies(props: {
                                     e.target.value
                                   )
                                 }
-                                className="h-8 w-full focus-visible:ring-0 focus-visible:ring-offset-0"
+                                className="h-8 w-full min-w-20 focus-visible:ring-0 focus-visible:ring-offset-0"
                               />
                               {cookie.subValues &&
                                 cookie.subValues.length > 0 && (
@@ -971,7 +971,7 @@ export default function SavedCookies(props: {
                                         Sub Name
                                       </TableHead>
                                       <TableHead>Value</TableHead>
-                                      <TableHead className="w-[80px]">
+                                      <TableHead className="w-[60px]">
                                         Type
                                       </TableHead>
                                       <TableHead className="w-[60px]">
@@ -1000,7 +1000,7 @@ export default function SavedCookies(props: {
                                                 index
                                               )
                                             }
-                                            className="w-full text-sm"
+                                            className="w-full min-w-20 text-sm"
                                           />
                                         </TableCell>
                                         <TableCell>
