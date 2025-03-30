@@ -812,7 +812,7 @@ export default function SavedCookies(props: {
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             {selectedCookiesEntry && (
               <Button
                 onClick={() => {
@@ -1041,7 +1041,7 @@ export default function SavedCookies(props: {
               </div>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               Cancel
             </Button>
@@ -1054,14 +1054,14 @@ export default function SavedCookies(props: {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[90%] sm:max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete this saved cookie entry.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="gap-2">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>
               Delete
