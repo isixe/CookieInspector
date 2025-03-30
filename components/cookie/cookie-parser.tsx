@@ -86,7 +86,7 @@ export default function CookieParser() {
           const [name, ...valueParts] = cookie.split('=')
           const value = valueParts.join('=') // Rejoin in case value contains = characters
 
-          const id = `cookie-${index}-${Date.now()}`
+          const id = `${Date.now()}-row-${index}`
           const type = getStringType(value)
 
           // Check if the value contains key-value pairs
