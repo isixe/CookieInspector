@@ -136,7 +136,7 @@ export default function CookieHistory(props: {
   return (
     <div className="flex h-full flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Cookie History</h2>
+        <h2 className="text-xl font-semibold">Cookie History</h2>
         {history.length > 0 && (
           <Button variant="destructive" onClick={handleClearHistory} size="sm">
             <Trash2 className="mr-2 h-4 w-4" />

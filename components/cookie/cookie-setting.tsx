@@ -61,10 +61,10 @@ export default function CookieSetting() {
 
   return (
     <div className="flex h-full flex-col space-y-6">
-      <h2 className="text-2xl font-semibold">Settings</h2>
+      <h2 className="text-xl font-semibold">Settings</h2>
 
       <ScrollArea className="flex-1">
-        <div className="space-y-8 pr-4">
+        <div className="space-y-8">
           <Card className="space-y-4 p-4">
             <div className="space-y-2">
               <h3 className="text-md font-medium">About</h3>

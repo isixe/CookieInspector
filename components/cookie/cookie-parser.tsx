@@ -235,7 +235,7 @@ export default function CookieParser() {
   return (
     <div className="flex h-full flex-col space-y-4">
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">Cookie Parser</h2>
+        <h2 className="text-xl font-semibold">Cookie Parser</h2>
         <div className="relative">
           <Textarea
             id="cookie-input"

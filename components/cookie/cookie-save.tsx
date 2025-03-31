@@ -453,7 +453,7 @@ export default function SavedCookies(props: {
 
   return (
     <div className="flex h-full flex-col space-y-4">
-      <h2 className="text-2xl font-semibold">Saved Cookies</h2>
+      <h2 className="text-xl font-semibold">Saved Cookies</h2>
 
       {savedCookies.length > 0 && (
         <div className="relative">
