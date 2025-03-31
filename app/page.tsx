@@ -20,7 +20,7 @@ export default function Home() {
     <SettingProvider>
       <CookieProvider>
         <main className="flex h-screen w-screen flex-col overflow-hidden bg-background">
-          <div className="flex flex-1 overflow-hidden">
+          <div>
             <Tabs
               value={activeTab}
               onValueChange={(value) => setActiveTab(value)}
