@@ -178,71 +178,69 @@ export default function CookieHistory(props: {
         </div>
       ) : (
         <div className="flex-1 overflow-auto rounded-md border">
-          <ScrollArea className="h-full">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background">
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Cookies</TableHead>
-                  <TableHead className="w-[120px]">Actions</TableHead>
+          <Table>
+            <TableHeader className="sticky top-0 z-10 bg-background">
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Cookies</TableHead>
+                <TableHead className="w-[120px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredHistory.map((entry) => (
+                <TableRow
+                  key={entry.id}
+                  className={selectedEntry === entry.id ? 'bg-muted/30' : ''}
+                  onClick={() => setSelectedEntry(entry.id)}
+                >
+                  <TableCell className="whitespace-nowrap">
+                    {formatDate(entry.timestamp)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex max-w-[500px] flex-wrap gap-1 overflow-hidden truncate">
+                      {entry.parsedCookies.slice(0, 3).map((cookie) => (
+                        <Badge key={cookie.id} variant="outline">
+                          {cookie.name.length > 55
+                            ? `${cookie.name.substring(0, 55)}...`
+                            : cookie.name}
+                        </Badge>
+                      ))}
+                      {entry.parsedCookies.length > 3 && (
+                        <Badge variant="outline">
+                          +{entry.parsedCookies.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="mt-2 max-w-[500px] truncate text-xs text-muted-foreground">
+                      {entry.originCookieString.length > 60
+                        ? `${entry.originCookieString.substring(0, 60)}...`
+                        : entry.originCookieString}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handlePreview(entry)}
+                        title="Preview cookies"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRestore(entry)}
+                        title="Restore these cookies"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredHistory.map((entry) => (
-                  <TableRow
-                    key={entry.id}
-                    className={selectedEntry === entry.id ? 'bg-muted/30' : ''}
-                    onClick={() => setSelectedEntry(entry.id)}
-                  >
-                    <TableCell className="whitespace-nowrap">
-                      {formatDate(entry.timestamp)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex max-w-[500px] flex-wrap gap-1 overflow-hidden truncate">
-                        {entry.parsedCookies.slice(0, 3).map((cookie) => (
-                          <Badge key={cookie.id} variant="outline">
-                            {cookie.name.length > 55
-                              ? `${cookie.name.substring(0, 55)}...`
-                              : cookie.name}
-                          </Badge>
-                        ))}
-                        {entry.parsedCookies.length > 3 && (
-                          <Badge variant="outline">
-                            +{entry.parsedCookies.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="mt-2 max-w-[500px] truncate text-xs text-muted-foreground">
-                        {entry.originCookieString.length > 60
-                          ? `${entry.originCookieString.substring(0, 60)}...`
-                          : entry.originCookieString}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handlePreview(entry)}
-                          title="Preview cookies"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRestore(entry)}
-                          title="Restore these cookies"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
@@ -338,7 +336,7 @@ export default function CookieHistory(props: {
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             {previewEntry && (
               <Button
                 onClick={() => {
@@ -358,14 +356,14 @@ export default function CookieHistory(props: {
       </Dialog>
 
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[90%] sm:max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete your entire cookie history.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="gap-2">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmClearHistory}>
               Delete

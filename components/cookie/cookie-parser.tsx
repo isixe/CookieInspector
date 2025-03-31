@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -296,171 +295,165 @@ export default function CookieParser() {
       </div>
       {parsedCookies.length > 0 ? (
         <div className="flex-1 overflow-hidden rounded-md border">
-          <ScrollArea className="h-full">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background">
-                <TableRow>
-                  <TableHead className="w-[50px]">
-                    <Checkbox
-                      checked={selectedCookies.length === parsedCookies.length}
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                  <TableHead className="w-1/4">Name</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead className="w-[80px]">Type</TableHead>
-                  <TableHead className="w-[60px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {parsedCookies.map((cookie) => (
-                  <React.Fragment key={cookie.id}>
-                    <TableRow key={cookie.id}>
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedCookies.includes(cookie.id)}
-                          onCheckedChange={() =>
-                            handleCheckboxChange(cookie.id)
+          <Table>
+            <TableHeader className="sticky top-0 z-10 bg-background">
+              <TableRow>
+                <TableHead className="w-[50px]">
+                  <Checkbox
+                    checked={selectedCookies.length === parsedCookies.length}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
+                <TableHead className="w-1/4">Name</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead className="w-[80px]">Type</TableHead>
+                <TableHead className="w-[60px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {parsedCookies.map((cookie) => (
+                <React.Fragment key={cookie.id}>
+                  <TableRow key={cookie.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedCookies.includes(cookie.id)}
+                        onCheckedChange={() => handleCheckboxChange(cookie.id)}
+                      />
+                    </TableCell>
+                    <TableCell
+                      className="max-w-[150px] truncate font-medium"
+                      title={cookie.name}
+                    >
+                      {cookie.name}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={cookie.value}
+                          onChange={(e) =>
+                            handleValueChange(cookie.id, e.target.value)
                           }
+                          className="text-sm"
                         />
-                      </TableCell>
-                      <TableCell
-                        className="max-w-[150px] truncate font-medium"
-                        title={cookie.name}
+                        {cookie.subValues && cookie.subValues.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleRowExpansion(cookie.id)}
+                          >
+                            {expandedRows[cookie.id] ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getTypeColor(cookie.type)}>
+                        {cookie.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteOneCookie(cookie.id)}
                       >
-                        {cookie.name}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            value={cookie.value}
-                            onChange={(e) =>
-                              handleValueChange(cookie.id, e.target.value)
-                            }
-                            className="text-sm"
-                          />
-                          {cookie.subValues && cookie.subValues.length > 0 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleRowExpansion(cookie.id)}
-                            >
-                              {expandedRows[cookie.id] ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              )}
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getTypeColor(cookie.type)}>
-                          {cookie.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteOneCookie(cookie.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    {cookie.subValues && expandedRows[cookie.id] && (
-                      <TableRow key={`${cookie.id}-expanded`}>
-                        <TableCell colSpan={5}>
-                          <div className="rounded-md bg-muted/50 py-2 pl-10">
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead className="w-1/4">
-                                    Sub Name
-                                  </TableHead>
-                                  <TableHead>Value</TableHead>
-                                  <TableHead className="w-[80px]">
-                                    Type
-                                  </TableHead>
-                                  <TableHead className="w-[60px]">
-                                    Actions
-                                  </TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {cookie.subValues.map((subValue, index) => (
-                                  <TableRow key={`${cookie.id}-sub-${index}`}>
-                                    <TableCell
-                                      className="max-w-[150px] truncate"
-                                      title={subValue.name}
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  {cookie.subValues && expandedRows[cookie.id] && (
+                    <TableRow key={`${cookie.id}-expanded`}>
+                      <TableCell colSpan={5}>
+                        <div className="rounded-md bg-muted/50 py-2 pl-10">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="w-1/4">
+                                  Sub Name
+                                </TableHead>
+                                <TableHead>Value</TableHead>
+                                <TableHead className="w-[80px]">Type</TableHead>
+                                <TableHead className="w-[60px]">
+                                  Actions
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {cookie.subValues.map((subValue, index) => (
+                                <TableRow key={`${cookie.id}-sub-${index}`}>
+                                  <TableCell
+                                    className="max-w-[150px] truncate"
+                                    title={subValue.name}
+                                  >
+                                    {subValue.name}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Input
+                                      value={subValue.value}
+                                      onChange={(e) =>
+                                        handleValueChange(
+                                          cookie.id,
+                                          e.target.value,
+                                          index,
+                                          subValue.name
+                                        )
+                                      }
+                                      className="w-full text-sm"
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      className={getTypeColor(subValue.type)}
                                     >
-                                      {subValue.name}
-                                    </TableCell>
-                                    <TableCell>
-                                      <Input
-                                        value={subValue.value}
-                                        onChange={(e) =>
-                                          handleValueChange(
+                                      {subValue.type}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const updatedCookie =
+                                          parsedCookies.find(
+                                            (c) => c.id === cookie.id
+                                          )
+                                        if (
+                                          updatedCookie &&
+                                          updatedCookie.subValues
+                                        ) {
+                                          const newSubValues = [
+                                            ...updatedCookie.subValues
+                                          ]
+                                          newSubValues.splice(index, 1)
+                                          updateOneSubCookie(
                                             cookie.id,
-                                            e.target.value,
-                                            index,
-                                            subValue.name
+                                            cookie.value,
+                                            undefined,
+                                            undefined,
+                                            newSubValues
                                           )
                                         }
-                                        className="w-full text-sm"
-                                      />
-                                    </TableCell>
-                                    <TableCell>
-                                      <Badge
-                                        className={getTypeColor(subValue.type)}
-                                      >
-                                        {subValue.type}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                          const updatedCookie =
-                                            parsedCookies.find(
-                                              (c) => c.id === cookie.id
-                                            )
-                                          if (
-                                            updatedCookie &&
-                                            updatedCookie.subValues
-                                          ) {
-                                            const newSubValues = [
-                                              ...updatedCookie.subValues
-                                            ]
-                                            newSubValues.splice(index, 1)
-                                            updateOneSubCookie(
-                                              cookie.id,
-                                              cookie.value,
-                                              undefined,
-                                              undefined,
-                                              newSubValues
-                                            )
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+                                      }}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       ) : (
         <div className="flex-1 rounded-md border bg-muted/10 py-8 text-center text-muted-foreground">
@@ -507,7 +500,7 @@ export default function CookieParser() {
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
               Cancel
             </Button>

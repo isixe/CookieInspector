@@ -1,7 +1,6 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -441,123 +440,119 @@ export default function CookieCompare() {
           <div className="flex-1 overflow-hidden">
             {compareMode === 'table' ? (
               <div className="w-full overflow-auto">
-                <ScrollArea className="h-full">
-                  <div className="min-w-[640px]">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[120px]">
-                            Cookie Name
-                          </TableHead>
-                          <TableHead>Left Value</TableHead>
-                          <TableHead>Right Value</TableHead>
-                          <TableHead className="w-[100px]">Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {compareResults.map((result, index) => (
-                          <TableRow
-                            key={index}
-                            className={result.isDifferent ? 'bg-muted/30' : ''}
-                          >
-                            <TableCell className="font-medium">
-                              {result.name}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                {result.leftValue ? (
-                                  <>
-                                    <span
-                                      className="max-w-[150px] flex-1 truncate md:max-w-[300px]"
-                                      title={result.leftValue}
-                                    >
-                                      {result.leftValue}
-                                    </span>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6 shrink-0"
-                                      onClick={() =>
-                                        handleCopyCookie(
-                                          result.leftValue,
-                                          `left-${index}`
-                                        )
-                                      }
-                                      title="Copy value"
-                                    >
-                                      {copiedItems[`left-${index}`] ? (
-                                        <Check className="h-4 w-4 text-green-500" />
-                                      ) : (
-                                        <Copy className="h-4 w-4" />
-                                      )}
-                                    </Button>
-                                  </>
-                                ) : (
-                                  <span className="italic text-muted-foreground">
-                                    Not present
+                <div className="min-w-[640px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[120px]">Cookie Name</TableHead>
+                        <TableHead>Left Value</TableHead>
+                        <TableHead>Right Value</TableHead>
+                        <TableHead className="w-[100px]">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {compareResults.map((result, index) => (
+                        <TableRow
+                          key={index}
+                          className={result.isDifferent ? 'bg-muted/30' : ''}
+                        >
+                          <TableCell className="font-medium">
+                            {result.name}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              {result.leftValue ? (
+                                <>
+                                  <span
+                                    className="max-w-[150px] flex-1 truncate md:max-w-[300px]"
+                                    title={result.leftValue}
+                                  >
+                                    {result.leftValue}
                                   </span>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                {result.rightValue ? (
-                                  <>
-                                    <span
-                                      className="max-w-[150px] flex-1 truncate md:max-w-[300px]"
-                                      title={result.rightValue}
-                                    >
-                                      {result.rightValue}
-                                    </span>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6 shrink-0"
-                                      onClick={() =>
-                                        handleCopyCookie(
-                                          result.rightValue,
-                                          `right-${index}`
-                                        )
-                                      }
-                                      title="Copy value"
-                                    >
-                                      {copiedItems[`right-${index}`] ? (
-                                        <Check className="h-4 w-4 text-green-500" />
-                                      ) : (
-                                        <Copy className="h-4 w-4" />
-                                      )}
-                                    </Button>
-                                  </>
-                                ) : (
-                                  <span className="italic text-muted-foreground">
-                                    Not present
-                                  </span>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {result.isDifferent ? (
-                                <Badge
-                                  variant="destructive"
-                                  className="hover:no-underline"
-                                >
-                                  Different
-                                </Badge>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 shrink-0"
+                                    onClick={() =>
+                                      handleCopyCookie(
+                                        result.leftValue,
+                                        `left-${index}`
+                                      )
+                                    }
+                                    title="Copy value"
+                                  >
+                                    {copiedItems[`left-${index}`] ? (
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                      <Copy className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </>
                               ) : (
-                                <Badge
-                                  variant="outline"
-                                  className="hover:no-underline"
-                                >
-                                  Same
-                                </Badge>
+                                <span className="italic text-muted-foreground">
+                                  Not present
+                                </span>
                               )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </ScrollArea>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              {result.rightValue ? (
+                                <>
+                                  <span
+                                    className="max-w-[150px] flex-1 truncate md:max-w-[300px]"
+                                    title={result.rightValue}
+                                  >
+                                    {result.rightValue}
+                                  </span>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 shrink-0"
+                                    onClick={() =>
+                                      handleCopyCookie(
+                                        result.rightValue,
+                                        `right-${index}`
+                                      )
+                                    }
+                                    title="Copy value"
+                                  >
+                                    {copiedItems[`right-${index}`] ? (
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                      <Copy className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </>
+                              ) : (
+                                <span className="italic text-muted-foreground">
+                                  Not present
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {result.isDifferent ? (
+                              <Badge
+                                variant="destructive"
+                                className="hover:no-underline"
+                              >
+                                Different
+                              </Badge>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                className="hover:no-underline"
+                              >
+                                Same
+                              </Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             ) : (
               <div className="grid h-full grid-cols-1 md:grid-cols-2 md:divide-x">

@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -487,104 +486,97 @@ export default function SavedCookies(props: {
           No results found for {searchTerm}.
         </div>
       ) : (
-        <div className="flex-1 overflow-hidden rounded-md border">
-          <ScrollArea className="h-full">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background">
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead className="hidden md:table-cell">Tags</TableHead>
-                  <TableHead className="hidden sm:table-cell">
-                    Date Saved
-                  </TableHead>
-                  <TableHead className="w-[150px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCookies.map((entry) => (
-                  <TableRow key={entry.id}>
-                    <TableCell className="font-medium">{entry.name}</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {entry.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {entry.tags.map((tag, index) => (
-                            <Badge
-                              key={index}
-                              variant="outline"
-                              className="hover:no-underline"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">
-                          No tags
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden whitespace-nowrap sm:table-cell">
-                      {formatDate(entry.timestamp)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleAppend(entry)}
-                          title="Append to current cookies"
-                        >
-                          <PlusCircle className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleShowDetails(entry.id)}
-                          title="View details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditClick(entry)}
-                          title="Edit saved cookie"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            handleCopyCookies(
-                              entry.originCookieString,
-                              entry.id
-                            )
-                          }
-                          title="Copy cookie string"
-                          className="hidden sm:flex"
-                        >
-                          {copiedItems[entry.id] ? (
-                            <Check className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOneRecordDeleteClick(entry.id)}
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+        <div className="flex-1 rounded-md border">
+          <Table className>
+            <TableHeader className="sticky top-0 z-10 bg-background">
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Tags</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="w-[150px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCookies.map((entry) => (
+                <TableRow key={entry.id}>
+                  <TableCell className="font-medium">{entry.name}</TableCell>
+                  <TableCell>
+                    {entry.tags.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {entry.tags.map((tag, index) => (
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="hover:no-underline"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        No tags
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {formatDate(entry.timestamp)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleAppend(entry)}
+                        title="Append to current cookies"
+                      >
+                        <PlusCircle className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleShowDetails(entry.id)}
+                        title="View details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditClick(entry)}
+                        title="Edit saved cookie"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          handleCopyCookies(entry.originCookieString, entry.id)
+                        }
+                        title="Copy cookie string"
+                        className="hidden sm:flex"
+                      >
+                        {copiedItems[entry.id] ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleOneRecordDeleteClick(entry.id)}
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
