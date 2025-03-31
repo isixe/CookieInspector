@@ -38,19 +38,34 @@ export default function CookieParser() {
     setSavedCookies,
     selectedCookies,
     setSelectedCookies,
-    updateOneSubCookie,
     deleteOneCookie
   } = useContext(CookieContext)
 
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [cookieName, setCookieName] = useState('')
   const [cookieTags, setCookieTags] = useState('')
   const [cookieDescription, setCookieDescription] = useState('')
+
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
   const [copyClicked, setCopyClicked] = useState(false)
 
-  const parseSubValues = useCallback(
-    (value: string): { name: string; value: string; type: CookieType }[] => {
+  const parseCookies = useCallback((str: string): ParsedCookie[] => {
+    if (!str) {
+      return []
+    }
+
+    const cookieList = str
+      .split(';')
+      .map((cookie) => cookie.trim())
+      .filter((cookie) => cookie)
+
+    if (cookieList.length === 0) {
+      return []
+    }
+
+    const parseSubValues = (
+      value: string
+    ): { name: string; value: string; type: CookieType }[] => {
       if (value.includes('&') && value.includes('=')) {
         return value
           .split('&')
@@ -67,41 +82,29 @@ export default function CookieParser() {
       }
 
       return []
-    },
-    []
-  )
+    }
 
-  const parseCookieString = useCallback(
-    (str: string): ParsedCookie[] => {
-      if (!str) {
-        return []
+    const newParsedCookies = cookieList.map((cookie, index) => {
+      const [name, ...valueParts] = cookie.split('=')
+      const value = valueParts.join('=') // Rejoin in case value contains = characters
+
+      const id = `${Date.now()}-row-${index}`
+      const type = getStringType(value)
+
+      // Check if the value contains key-value pairs
+      const subValues = parseSubValues(cookie)
+
+      return {
+        id,
+        name: name.trim(),
+        value: value || '',
+        type,
+        subValues: subValues.length > 0 ? subValues : []
       }
+    })
 
-      return str
-        .split(';')
-        .map((cookie) => cookie.trim())
-        .filter((cookie) => cookie)
-        .map((cookie, index) => {
-          const [name, ...valueParts] = cookie.split('=')
-          const value = valueParts.join('=') // Rejoin in case value contains = characters
-
-          const id = `${Date.now()}-row-${index}`
-          const type = getStringType(value)
-
-          // Check if the value contains key-value pairs
-          const subValues = parseSubValues(cookie)
-
-          return {
-            id,
-            name: name.trim(),
-            value: value || '',
-            type,
-            subValues: subValues.length > 0 ? subValues : []
-          }
-        })
-    },
-    [parseSubValues]
-  )
+    return newParsedCookies
+  }, [])
 
   // Parse cookies whenever the cookie string changes
   useEffect(() => {
@@ -110,9 +113,31 @@ export default function CookieParser() {
       return
     }
 
-    const cookies = parseCookieString(originCookieString)
+    const cookies = parseCookies(originCookieString)
     setParsedCookies(cookies)
-  }, [originCookieString, setParsedCookies, parseCookieString])
+  }, [originCookieString, setParsedCookies, parseCookies])
+
+  const toggleRowExpansion = (id: string) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }))
+  }
+
+  const getSelectedParsedCookiesArray = useCallback(() => {
+    if (selectedCookies.length === 0) {
+      return parsedCookies
+    }
+    return parsedCookies.filter((cookie) => selectedCookies.includes(cookie.id))
+  }, [parsedCookies, selectedCookies])
+
+  const getSelectedCookiesString = useCallback(() => {
+    const selectedParsedCookiesArray = getSelectedParsedCookiesArray()
+    const selectedCookiesString = selectedParsedCookiesArray
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join(';')
+    return selectedCookiesString
+  }, [getSelectedParsedCookiesArray])
 
   const handleCheckboxChange = (id: string) => {
     setSelectedCookies((prev: string[]) => {
@@ -122,25 +147,6 @@ export default function CookieParser() {
         return [...prev, id]
       }
     })
-  }
-
-  const handleSelectAll = () => {
-    if (selectedCookies.length === parsedCookies.length) {
-      setSelectedCookies([])
-    } else {
-      setSelectedCookies(parsedCookies.map((cookie) => cookie.id))
-    }
-  }
-
-  // Update the handleValueChange function to handle sub-value updates
-  const handleValueChange = (
-    id: string,
-    newValue: string,
-    subValueIndex?: number,
-    subValueName?: string,
-    newSubValues?: ParsedCookie[]
-  ) => {
-    updateOneSubCookie(id, newValue, subValueIndex, subValueName, newSubValues)
   }
 
   const handleCopyCookies = () => {
@@ -176,42 +182,6 @@ export default function CookieParser() {
     setSaveDialogOpen(false)
   }
 
-  const toggleRowExpansion = (id: string) => {
-    setExpandedRows((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }))
-  }
-
-  /**
-   * Get parsed cookies array filtered by selected
-   * @namespace [cookie context]
-   */
-  const getSelectedParsedCookiesArray = useCallback(() => {
-    if (selectedCookies.length === 0) {
-      return parsedCookies
-    }
-    return parsedCookies.filter((cookie) => selectedCookies.includes(cookie.id))
-  }, [parsedCookies, selectedCookies])
-
-  /**
-   * Get cookie string from selected cookies array
-   * @namespace [cookie context]
-   */
-  const getSelectedCookiesString = useCallback(() => {
-    const selectedParsedCookiesArray = getSelectedParsedCookiesArray()
-    const selectedCookiesString = selectedParsedCookiesArray
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
-    return selectedCookiesString
-  }, [getSelectedParsedCookiesArray])
-
-  /**
-   * Save cookies record form parsed cookies
-   * @param name saving cookie record name
-   * @param tags record tags
-   * @namespace cookies parser
-   */
   const saveOneCookieRecord = (
     name: string,
     tags: string[],
@@ -232,6 +202,29 @@ export default function CookieParser() {
 
     setSavedCookies([...savedCookies, newSavedCookie])
   }
+
+  const updateOneRowCookieValue = (id: string, newValue: string) => {
+    const newCookieString = parsedCookies
+      .map((cookie) => {
+        if (cookie.id === id) {
+          const updatedCookie = {
+            ...cookie,
+            value: newValue,
+            type: getStringType(newValue)
+          }
+          return `${updatedCookie.name}=${updatedCookie.value}`
+        }
+        return `${cookie.name}=${cookie.value}`
+      })
+      .join(';')
+
+    setOriginCookieString(newCookieString)
+  }
+
+  const deleteOneSubCookieValue = (cookieId: string, index: number) => {
+    return
+  }
+
   return (
     <div className="flex h-full flex-col space-y-4">
       <div className="space-y-2">
@@ -301,7 +294,15 @@ export default function CookieParser() {
                 <TableHead className="w-[50px]">
                   <Checkbox
                     checked={selectedCookies.length === parsedCookies.length}
-                    onCheckedChange={handleSelectAll}
+                    onCheckedChange={() => {
+                      if (selectedCookies.length === parsedCookies.length) {
+                        setSelectedCookies([])
+                      } else {
+                        setSelectedCookies(
+                          parsedCookies.map((cookie) => cookie.id)
+                        )
+                      }
+                    }}
                   />
                 </TableHead>
                 <TableHead className="w-1/4">Name</TableHead>
@@ -331,7 +332,7 @@ export default function CookieParser() {
                         <Input
                           value={cookie.value}
                           onChange={(e) =>
-                            handleValueChange(cookie.id, e.target.value)
+                            updateOneRowCookieValue(cookie.id, e.target.value)
                           }
                           className="text-sm"
                         />
@@ -395,11 +396,9 @@ export default function CookieParser() {
                                     <Input
                                       value={subValue.value}
                                       onChange={(e) =>
-                                        handleValueChange(
+                                        updateOneRowCookieValue(
                                           cookie.id,
-                                          e.target.value,
-                                          index,
-                                          subValue.name
+                                          e.target.value
                                         )
                                       }
                                       className="w-full text-sm"
@@ -417,26 +416,10 @@ export default function CookieParser() {
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => {
-                                        const updatedCookie =
-                                          parsedCookies.find(
-                                            (c) => c.id === cookie.id
-                                          )
-                                        if (
-                                          updatedCookie &&
-                                          updatedCookie.subValues
-                                        ) {
-                                          const newSubValues = [
-                                            ...updatedCookie.subValues
-                                          ]
-                                          newSubValues.splice(index, 1)
-                                          updateOneSubCookie(
-                                            cookie.id,
-                                            cookie.value,
-                                            undefined,
-                                            undefined,
-                                            newSubValues
-                                          )
-                                        }
+                                        deleteOneSubCookieValue(
+                                          cookie.id,
+                                          index
+                                        )
                                       }}
                                     >
                                       <Trash2 className="h-4 w-4" />

@@ -32,7 +32,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
-import type { CookieType, ParsedCookie, SavedCookieEntry } from '@/types/cookie'
+import { parseFromOriginString } from '@/core/parsed'
+import type { ParsedCookie, SavedCookieEntry } from '@/types/cookie'
 import { getStringType, getTypeColor } from '@/utils/stringType'
 import {
   Check,
@@ -254,43 +255,15 @@ export default function SavedCookies(props: {
     setEditDialogOpen(false)
   }
 
-  const preUpdateEditCookieString = (value: string) => {
-    setEditCookieString(value)
+  const preUpdateEditCookieString = (newCookieString: string) => {
+    setEditCookieString(newCookieString)
     // Parse the cookie string and update the parsed cookies state
-    const parsed: ParsedCookie[] = value.split(';').map((cookie, index) => {
-      const name = cookie.split('=')[0]
-      const value = cookie.substring(cookie.indexOf('=') + 1)
-
-      let subValues: { name: string; value: string; type: CookieType }[] = []
-      if (cookie.indexOf('&') > 0) {
-        subValues = cookie
-          .split('&')
-          .map((subCookie) => {
-            const [name, value] = subCookie.split('=')
-            if (name) {
-              return {
-                name,
-                value,
-                type: getStringType(value)
-              }
-            }
-          })
-          .filter((subValue) => subValue !== undefined)
-      }
-
-      return {
-        id: `${cookieEditId}-row-${index}`,
-        name: name || '',
-        value: value || '',
-        type: getStringType(value),
-        subValues
-      }
-    })
-    setEditParsedCookies(parsed)
+    const newParsedCookies = parseFromOriginString(newCookieString)
+    setEditParsedCookies(newParsedCookies)
   }
 
   const preUpdateEditRowCookieValue = (rowId: string, value: string) => {
-    const cookieString = editParsedCookies
+    const newCookieString = editParsedCookies
       .map((row) => {
         if (row.id === rowId) {
           return `${row.name}=${value}`
@@ -300,41 +273,10 @@ export default function SavedCookies(props: {
       .join(';')
 
     // Update cookie string when individual cookie value changes
-    setEditCookieString(cookieString)
+    setEditCookieString(newCookieString)
 
-    const parsedCookie: ParsedCookie[] = cookieString
-      .split(';')
-      .map((rowCookie, index) => {
-        const name = rowCookie.split('=')[0]
-        const value = rowCookie.substring(rowCookie.indexOf('=') + 1)
-
-        let subValues: { name: string; value: string; type: CookieType }[] = []
-        if (rowCookie.indexOf('&') > 0) {
-          subValues = rowCookie
-            .split('&')
-            .map((subCookie) => {
-              const [name, value] = subCookie.split('=')
-              if (name) {
-                return {
-                  name,
-                  value,
-                  type: getStringType(value)
-                }
-              }
-            })
-            .filter((subValue) => subValue !== undefined)
-        }
-
-        return {
-          id: `${cookieEditId}-row-${index}`,
-          name: name || '',
-          value: value || '',
-          type: getStringType(value),
-          subValues
-        }
-      })
-
-    setEditParsedCookies(parsedCookie)
+    const newParsedCookie = parseFromOriginString(newCookieString)
+    setEditParsedCookies(newParsedCookie)
   }
 
   const preDeleteEditRowCookie = (rowId: string) => {

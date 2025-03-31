@@ -4,7 +4,6 @@ import { SettingContext } from '@/components/context/setting-context'
 import {
   CookieContextType,
   CookieHistoryEntry,
-  CookieType,
   ParsedCookie,
   SavedCookieEntry
 } from '@/types/cookie'
@@ -33,7 +32,6 @@ export const CookieContext = createContext<CookieContextType>({
   setSavedCookies: () => {},
   deleteOneSavedCookie: () => {},
   updateOneSavedCookie: () => {},
-  updateOneSubCookie: () => {},
   deleteOneSubCookie: () => {},
   deleteOneCookie: () => {},
   appendCookieString: () => {},
@@ -147,48 +145,6 @@ export function CookieProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  // Update the updateOneSubCookie function to handle sub-value updates
-  const updateOneSubCookie = (
-    id: string,
-    subValueString: string,
-    subValueIndex?: number,
-    subValueName?: string,
-    newSubValues?: { name: string; value: string; type: CookieType }[]
-  ) => {
-    const updatedCookies = parsedCookies.map((cookie) => {
-      if (cookie.id === id) {
-        if (newSubValues) {
-          // Replace all sub-values
-          return { ...cookie, subValues: newSubValues }
-        }
-
-        if (
-          subValueIndex &&
-          subValueName &&
-          subValueString &&
-          cookie.subValues
-        ) {
-          // Update a sub-value
-          const originSubValues = cookie.subValues
-          originSubValues[subValueIndex] = {
-            ...originSubValues[subValueIndex],
-            value: subValueString
-          }
-          return { ...cookie, subValues: originSubValues }
-        }
-      }
-      return cookie
-    })
-
-    setParsedCookies(updatedCookies)
-
-    // Update the cookie string
-    const newCookieString = updatedCookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
-    setOriginCookieString(newCookieString)
-  }
-
   const deleteOneSubCookie = (
     id: string,
     subValueIndex: number,
@@ -262,7 +218,6 @@ export function CookieProvider({ children }: { children: ReactNode }) {
         setSavedCookies,
         deleteOneSavedCookie,
         updateOneSavedCookie,
-        updateOneSubCookie,
         deleteOneSubCookie,
         deleteOneCookie,
         appendCookieString,

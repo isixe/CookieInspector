@@ -90,13 +90,6 @@ export interface CookieContextType {
     parsedCookies: ParsedCookie[],
     description: string
   ) => void
-  updateOneSubCookie: (
-    id: string,
-    subValueString: string,
-    subValueIndex?: number,
-    subValueName?: string,
-    newSubValues?: ParsedCookie[]
-  ) => void
   deleteOneSubCookie: (
     id: string,
     subValueIndex: number,
