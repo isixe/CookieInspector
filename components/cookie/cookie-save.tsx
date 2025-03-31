@@ -954,7 +954,7 @@ export default function SavedCookies(props: {
                         </TableRow>
                         {cookie.subValues && expandedRows[cookie.id] && (
                           <TableRow key={`${cookie.id}-expanded`}>
-                            <TableCell colSpan={3} className="p-0">
+                            <TableCell colSpan={4} className="p-4">
                               <div className="rounded-md bg-muted/50 py-2 pl-10">
                                 <Table>
                                   <TableHeader>

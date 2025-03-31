@@ -1,7 +1,5 @@
 'use client'
 
-import type React from 'react'
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +32,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { ParsedCookie } from '@/types/cookie'
-import { Copy, Eye, RotateCcw, Search, Trash2, X } from 'lucide-react'
+import { Check, Copy, Eye, RotateCcw, Search, Trash2, X } from 'lucide-react'
 import {
   Dispatch,
   SetStateAction,
@@ -59,13 +57,17 @@ export default function CookieHistory(props: {
   const { setActiveTab } = props
   const { history, clearHistory, setOriginCookieString, setParsedCookies } =
     useContext(CookieContext)
+
+  const [searchTerm, setSearchTerm] = useState('')
+  const [copiedItems, setCopiedItems] = useState<Record<string, boolean>>({})
+
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [selectedEntry, setSelectedEntry] = useState<string | null>(null)
+
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewEntry, setPreviewEntry] = useState<CookieHistoryEntry | null>(
     null
   )
-  const [searchTerm, setSearchTerm] = useState('')
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleString()
@@ -111,21 +113,16 @@ export default function CookieHistory(props: {
     setDeleteConfirmOpen(false)
   }
 
-  // Helper function for copy button feedback
-  const handleCopy = (
-    text: string,
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    navigator.clipboard.writeText(text)
-    // Add visual feedback
-    const button = event.currentTarget
-    if (button) {
-      const originalBg = button.style.background
-      button.style.background = 'rgba(0, 255, 0, 0.1)'
+  const handleCopyCookie = (text: string, id: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // Set this specific item as copied
+      setCopiedItems((prev) => ({ ...prev, [id]: true }))
+
+      // Reset the copied state after 2 seconds
       setTimeout(() => {
-        button.style.background = originalBg
-      }, 300)
-    }
+        setCopiedItems((prev) => ({ ...prev, [id]: false }))
+      }, 2000)
+    })
   }
 
   // Clear search when component unmounts or when history changes
@@ -262,12 +259,19 @@ export default function CookieHistory(props: {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) =>
-                      handleCopy(previewEntry.originCookieString, e)
+                    onClick={() =>
+                      handleCopyCookie(
+                        previewEntry.originCookieString,
+                        previewEntry.id
+                      )
                     }
                     title="Copy cookie string"
                   >
-                    <Copy className="h-4 w-4" />
+                    {copiedItems[previewEntry.id] ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
                 <Card className="max-h-[100px] overflow-auto bg-muted/30 p-3">
@@ -319,12 +323,19 @@ export default function CookieHistory(props: {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={(e) =>
-                                handleCopy(`${cookie.name}=${cookie.value}`, e)
+                              onClick={() =>
+                                handleCopyCookie(
+                                  `${cookie.name}=${cookie.value}`,
+                                  cookie.id
+                                )
                               }
                               title={`Copy ${cookie.name}=${cookie.value}`}
                             >
-                              <Copy className="h-4 w-4" />
+                              {copiedItems[cookie.id] ? (
+                                <Check className="h-4 w-4" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
                             </Button>
                           </TableCell>
                         </TableRow>

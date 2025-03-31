@@ -461,74 +461,74 @@ export default function CookieCompare() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              {result.leftValue ? (
-                                <>
+                              <>
+                                {result.leftValue ? (
                                   <span
                                     className="max-w-[150px] flex-1 truncate md:max-w-[300px]"
                                     title={result.leftValue}
                                   >
                                     {result.leftValue}
                                   </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 shrink-0"
-                                    onClick={() =>
-                                      handleCopyCookie(
-                                        result.leftValue,
-                                        `left-${index}`
-                                      )
-                                    }
-                                    title="Copy value"
-                                  >
-                                    {copiedItems[`left-${index}`] ? (
-                                      <Check className="h-4 w-4 text-green-500" />
-                                    ) : (
-                                      <Copy className="h-4 w-4" />
-                                    )}
-                                  </Button>
-                                </>
-                              ) : (
-                                <span className="italic text-muted-foreground">
-                                  Not present
-                                </span>
-                              )}
+                                ) : (
+                                  <span className="max-w-[150px] flex-1 truncate italic text-muted-foreground md:max-w-[300px]">
+                                    Not present
+                                  </span>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 shrink-0"
+                                  onClick={() =>
+                                    handleCopyCookie(
+                                      result.leftValue,
+                                      `left-${index}`
+                                    )
+                                  }
+                                  title="Copy value"
+                                >
+                                  {copiedItems[`left-${index}`] ? (
+                                    <Check className="h-4 w-4" />
+                                  ) : (
+                                    <Copy className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              {result.rightValue ? (
-                                <>
+                              <>
+                                {result.rightValue ? (
                                   <span
                                     className="max-w-[150px] flex-1 truncate md:max-w-[300px]"
                                     title={result.rightValue}
                                   >
                                     {result.rightValue}
                                   </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 shrink-0"
-                                    onClick={() =>
-                                      handleCopyCookie(
-                                        result.rightValue,
-                                        `right-${index}`
-                                      )
-                                    }
-                                    title="Copy value"
-                                  >
-                                    {copiedItems[`right-${index}`] ? (
-                                      <Check className="h-4 w-4 text-green-500" />
-                                    ) : (
-                                      <Copy className="h-4 w-4" />
-                                    )}
-                                  </Button>
-                                </>
-                              ) : (
-                                <span className="italic text-muted-foreground">
-                                  Not present
-                                </span>
-                              )}
+                                ) : (
+                                  <span className="md:max-w-[300px]flex-1 max-w-[150px] flex-1 truncate italic text-muted-foreground md:max-w-[300px]">
+                                    Not present
+                                  </span>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 shrink-0"
+                                  onClick={() =>
+                                    handleCopyCookie(
+                                      result.rightValue,
+                                      `right-${index}`
+                                    )
+                                  }
+                                  title="Copy value"
+                                >
+                                  {copiedItems[`right-${index}`] ? (
+                                    <Check className="h-4 w-4" />
+                                  ) : (
+                                    <Copy className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -585,7 +585,7 @@ export default function CookieCompare() {
                               title="Copy all cookies"
                             >
                               {copiedItems[leftItem.label] ? (
-                                <Check className="h-4 w-4 text-green-500" />
+                                <Check className="h-4 w-4" />
                               ) : (
                                 <Copy className="h-4 w-4" />
                               )}
@@ -617,7 +617,7 @@ export default function CookieCompare() {
                               title="Copy all cookies"
                             >
                               {copiedItems[rightItem.label] ? (
-                                <Check className="h-4 w-4 text-green-500" />
+                                <Check className="h-4 w-4" />
                               ) : (
                                 <Copy className="h-4 w-4" />
                               )}
