@@ -22,8 +22,13 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
-import { CookieType, ParsedCookie, SavedCookieEntry } from '@/types/cookie'
-import { getStringType, getTypeColor } from '@/utils/stringType'
+import {
+  parseFromOriginString,
+  parseToOriginString,
+  updateRowToOriginParsedCookie
+} from '@/core/parsed'
+import { SavedCookieEntry } from '@/types/cookie'
+import { getTypeColor } from '@/utils/stringType'
 import { Check, ChevronDown, ChevronUp, Copy, Save, Trash2 } from 'lucide-react'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { CookieContext } from '../context/cookie-context'
@@ -49,73 +54,11 @@ export default function CookieParser() {
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
   const [copyClicked, setCopyClicked] = useState(false)
 
-  const parseCookies = useCallback((str: string): ParsedCookie[] => {
-    if (!str) {
-      return []
-    }
-
-    const cookieList = str
-      .split(';')
-      .map((cookie) => cookie.trim())
-      .filter((cookie) => cookie)
-
-    if (cookieList.length === 0) {
-      return []
-    }
-
-    const parseSubValues = (
-      value: string
-    ): { name: string; value: string; type: CookieType }[] => {
-      if (value.includes('&') && value.includes('=')) {
-        return value
-          .split('&')
-          .map((pair) => {
-            const [name, ...valueParts] = pair.split('=')
-            const subValue = valueParts.join('=').trim()
-            return {
-              name: name.trim(),
-              value: subValue,
-              type: getStringType(subValue)
-            }
-          })
-          .filter((pair) => pair.name)
-      }
-
-      return []
-    }
-
-    const newParsedCookies = cookieList.map((cookie, index) => {
-      const [name, ...valueParts] = cookie.split('=')
-      const value = valueParts.join('=') // Rejoin in case value contains = characters
-
-      const id = `${Date.now()}-row-${index}`
-      const type = getStringType(value)
-
-      // Check if the value contains key-value pairs
-      const subValues = parseSubValues(cookie)
-
-      return {
-        id,
-        name: name.trim(),
-        value: value || '',
-        type,
-        subValues: subValues.length > 0 ? subValues : []
-      }
-    })
-
-    return newParsedCookies
-  }, [])
-
   // Parse cookies whenever the cookie string changes
   useEffect(() => {
-    if (originCookieString.trim() === '') {
-      setParsedCookies([])
-      return
-    }
-
-    const cookies = parseCookies(originCookieString)
+    const cookies = parseFromOriginString(originCookieString)
     setParsedCookies(cookies)
-  }, [originCookieString, setParsedCookies, parseCookies])
+  }, [originCookieString, setParsedCookies])
 
   const toggleRowExpansion = (id: string) => {
     setExpandedRows((prev) => ({
@@ -133,9 +76,11 @@ export default function CookieParser() {
 
   const getSelectedCookiesString = useCallback(() => {
     const selectedParsedCookiesArray = getSelectedParsedCookiesArray()
-    const selectedCookiesString = selectedParsedCookiesArray
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
+
+    const selectedCookiesString = parseToOriginString(
+      selectedParsedCookiesArray
+    )
+
     return selectedCookiesString
   }, [getSelectedParsedCookiesArray])
 
@@ -204,20 +149,13 @@ export default function CookieParser() {
   }
 
   const updateOneRowCookieValue = (id: string, newValue: string) => {
-    const newCookieString = parsedCookies
-      .map((cookie) => {
-        if (cookie.id === id) {
-          const updatedCookie = {
-            ...cookie,
-            value: newValue,
-            type: getStringType(newValue)
-          }
-          return `${updatedCookie.name}=${updatedCookie.value}`
-        }
-        return `${cookie.name}=${cookie.value}`
-      })
-      .join(';')
+    const newParsedCookie = updateRowToOriginParsedCookie(
+      parsedCookies,
+      id,
+      newValue
+    )
 
+    const newCookieString = parseToOriginString(newParsedCookie)
     setOriginCookieString(newCookieString)
   }
 

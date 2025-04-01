@@ -32,9 +32,15 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
-import { parseFromOriginString } from '@/core/parsed'
+import {
+  parseFromOriginString,
+  parseToOriginString,
+  subParseToRowCookieString,
+  updateRowToOriginParsedCookie,
+  updateSubRowToOriginSubParsedCookie
+} from '@/core/parsed'
 import type { ParsedCookie, SavedCookieEntry } from '@/types/cookie'
-import { getStringType, getTypeColor } from '@/utils/stringType'
+import { getTypeColor } from '@/utils/stringType'
 import {
   Check,
   ChevronDown,
@@ -257,41 +263,41 @@ export default function SavedCookies(props: {
 
   const preUpdateEditCookieString = (newCookieString: string) => {
     setEditCookieString(newCookieString)
-    // Parse the cookie string and update the parsed cookies state
+
     const newParsedCookies = parseFromOriginString(newCookieString)
     setEditParsedCookies(newParsedCookies)
   }
 
   const preUpdateEditRowCookieValue = (rowId: string, value: string) => {
-    const newCookieString = editParsedCookies
-      .map((row) => {
-        if (row.id === rowId) {
-          return `${row.name}=${value}`
-        }
-        return `${row.name}=${row.value}`
-      })
-      .join(';')
+    const newParsedCookies = updateRowToOriginParsedCookie(
+      editParsedCookies,
+      rowId,
+      value
+    )
+    setEditParsedCookies(newParsedCookies)
 
-    // Update cookie string when individual cookie value changes
+    const newCookieString = parseToOriginString(newParsedCookies)
     setEditCookieString(newCookieString)
 
-    const newParsedCookie = parseFromOriginString(newCookieString)
-    setEditParsedCookies(newParsedCookie)
+    newParsedCookies.forEach((row) => {
+      if (!row.subValues.length) {
+        toggleRowExpansion(row.id)
+      }
+    })
   }
 
   const preDeleteEditRowCookie = (rowId: string) => {
     const newParsedCookies = editParsedCookies.filter((row) => row.id !== rowId)
     setEditParsedCookies(newParsedCookies)
-    const newCookieString = newParsedCookies
-      .map((row) => `${row.name}=${row.value}`)
-      .join(';')
+
+    const newCookieString = parseToOriginString(newParsedCookies)
     setEditCookieString(newCookieString)
   }
 
   const preUpdateEditOneSubCookieValue = (
     id: string,
-    newSubValue: string,
-    subValueIndex: number
+    subValueIndex: Number,
+    newSubValue: string
   ) => {
     const updatedCookies = editParsedCookies.map((cookie) => {
       if (cookie.id !== id) {
@@ -299,25 +305,16 @@ export default function SavedCookies(props: {
       }
 
       // Update a sub-value
-      let originParsedSubValues = cookie.subValues?.map((subValue, index) => {
-        if (index == subValueIndex) {
-          return {
-            ...subValue,
-            value: newSubValue,
-            type: getStringType(newSubValue)
-          }
-        }
-        return subValue
-      })
+      let originParsedSubValues = updateSubRowToOriginSubParsedCookie(
+        cookie.subValues,
+        subValueIndex,
+        newSubValue
+      )
 
       let subValuesString =
-        originParsedSubValues
-          ?.map((subValue) => `${subValue.name}=${subValue.value}`)
-          .join('&') || ''
+        subParseToRowCookieString(originParsedSubValues) || ''
 
-      if (subValueIndex !== 0 && !subValuesString.length) {
-        subValuesString = cookie.value
-      }
+      console.log(subValuesString)
 
       if (subValueIndex === 0 && subValuesString.length === 1) {
         toggleRowExpansion(id)
@@ -338,9 +335,7 @@ export default function SavedCookies(props: {
 
     // Update the edit cookie
     setEditParsedCookies(updatedCookies)
-    const newCookieString = updatedCookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
+    const newCookieString = parseToOriginString(updatedCookies)
     setEditCookieString(newCookieString)
   }
 
@@ -351,26 +346,18 @@ export default function SavedCookies(props: {
       }
 
       // Update a sub-value
-      let originParsedSubValues = cookie.subValues?.filter(
+      let originSubValues = cookie.subValues?.filter(
         (_, index) => index !== subValueIndex
       )
 
-      let subValuesString =
-        originParsedSubValues
-          ?.map((subValue) => `${subValue.name}=${subValue.value}`)
-          .join('&') || ''
+      let subValuesString = subParseToRowCookieString(originSubValues)
 
-      if (subValueIndex !== 0 && !subValuesString.length) {
-        subValuesString = cookie.value
-      }
-
-      if (!subValuesString) {
+      if (
+        !subValuesString ||
+        (subValueIndex === 0 && subValuesString.length === 1)
+      ) {
+        originSubValues = []
         toggleRowExpansion(id)
-      }
-
-      if (subValueIndex === 0 && subValuesString.length === 1) {
-        toggleRowExpansion(id)
-        originParsedSubValues = []
       }
 
       subValuesString = subValuesString.substring(
@@ -379,17 +366,16 @@ export default function SavedCookies(props: {
 
       return {
         ...cookie,
-        name: originParsedSubValues[0]?.name || cookie.name,
+        name: originSubValues[0]?.name || cookie.name,
         value: subValuesString,
-        subValues: originParsedSubValues
+        subValues: originSubValues
       }
     })
 
     // Update the edit cookie
     setEditParsedCookies(updatedCookies)
-    const newCookieString = updatedCookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
+
+    const newCookieString = parseToOriginString(updatedCookies)
     setEditCookieString(newCookieString)
   }
 
@@ -930,8 +916,8 @@ export default function SavedCookies(props: {
                                             onChange={(e) =>
                                               preUpdateEditOneSubCookieValue(
                                                 cookie.id,
-                                                e.target.value,
-                                                index
+                                                index,
+                                                e.target.value
                                               )
                                             }
                                             className="w-full min-w-20 text-sm"
