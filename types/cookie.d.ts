@@ -21,7 +21,16 @@ export interface ParsedCookie {
   name: string
   value: string
   type: CookieType
-  subValues: { name: string; value: string; type: CookieType }[]
+  subValues: SubParsedCookie[]
+}
+
+/**
+ * SubParsedCookie interface to include type
+ */
+export interface SubParsedCookie {
+  name: string
+  value: string
+  type: CookieType
 }
 
 /**
