@@ -42,8 +42,7 @@ export default function CookieParser() {
     savedCookies,
     setSavedCookies,
     selectedCookies,
-    setSelectedCookies,
-    deleteOneCookie
+    setSelectedCookies
   } = useContext(CookieContext)
 
   const [cookieName, setCookieName] = useState('')
@@ -157,6 +156,17 @@ export default function CookieParser() {
 
     const newCookieString = parseToOriginString(newParsedCookie)
     setOriginCookieString(newCookieString)
+  }
+
+  const deleteOneRowCookie = (id: string) => {
+    const updatedCookies = parsedCookies.filter((cookie) => cookie.id !== id)
+    setParsedCookies(updatedCookies)
+
+    const newCookieString = parseToOriginString(updatedCookies)
+    setOriginCookieString(newCookieString)
+
+    // Remove from selected if it was selected
+    setSelectedCookies((prev) => prev.filter((cookieId) => cookieId !== id))
   }
 
   const deleteOneSubCookieValue = (cookieId: string, index: number) => {
@@ -298,7 +308,7 @@ export default function CookieParser() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => deleteOneCookie(cookie.id)}
+                        onClick={() => deleteOneRowCookie(cookie.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

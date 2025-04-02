@@ -33,7 +33,6 @@ export const CookieContext = createContext<CookieContextType>({
   deleteOneSavedCookie: () => {},
   updateOneSavedCookie: () => {},
   deleteOneSubCookie: () => {},
-  deleteOneCookie: () => {},
   appendCookieString: () => {},
   clearSavedCookies: () => {}
 })
@@ -170,26 +169,6 @@ export function CookieProvider({ children }: { children: ReactNode }) {
       .join(';')
   }
 
-  /**
-   * Delete a cookie string which in current parser table row
-   * from the parsed cookies
-   * @param id The id of the cookie to delete
-   */
-  const deleteOneCookie = (id: string) => {
-    const updatedCookies = parsedCookies.filter((cookie) => cookie.id !== id)
-    setParsedCookies(updatedCookies)
-
-    // Update the cookie string
-    const newCookieString = updatedCookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
-
-    setOriginCookieString(newCookieString)
-
-    // Remove from selected if it was selected
-    setSelectedCookies((prev) => prev.filter((cookieId) => cookieId !== id))
-  }
-
   const appendCookieString = (cookieStr: string) => {
     if (!cookieStr.trim()) return
 
@@ -219,7 +198,6 @@ export function CookieProvider({ children }: { children: ReactNode }) {
         deleteOneSavedCookie,
         updateOneSavedCookie,
         deleteOneSubCookie,
-        deleteOneCookie,
         appendCookieString,
         clearSavedCookies
       }}
