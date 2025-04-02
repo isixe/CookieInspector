@@ -683,7 +683,9 @@ export default function SavedCookies(props: {
                                   <TableBody>
                                     {cookie.subValues.map(
                                       (subCookie, index) => (
-                                        <TableRow key={index}>
+                                        <TableRow
+                                          key={`${cookie.id}-sub-${index}`}
+                                        >
                                           <TableCell>
                                             {subCookie.name}
                                           </TableCell>
@@ -708,13 +710,13 @@ export default function SavedCookies(props: {
                                               onClick={() =>
                                                 handleCopyCookies(
                                                   `${subCookie.name}=${subCookie.value}`,
-                                                  `subCookie-${index}`
+                                                  `${cookie.id}-sub-${index}`
                                                 )
                                               }
                                               title={`Copy ${subCookie.name}=${subCookie.value}`}
                                             >
                                               {copiedItems[
-                                                `subCookie-${index}`
+                                                `${cookie.id}-sub-${index}`
                                               ] ? (
                                                 <Check className="h-4 w-4" />
                                               ) : (

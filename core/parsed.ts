@@ -51,7 +51,7 @@ export function parseFromOriginString(cookieString: string): ParsedCookie[] {
     const subValues = subParseFromRowCookieString(rowCookie)
 
     const rowParsedCookie = {
-      id: `${index}`,
+      id: `row-${index}`,
       name: rowName || '',
       value: rowValue || '',
       type,
