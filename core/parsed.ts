@@ -162,7 +162,7 @@ export function updateRowToOriginParsedCookie(
   rowValue: string,
   rowName?: string
 ): ParsedCookie[] {
-  let updatedCookies = originParsedCookie.map((cookie) => {
+  let newRowParsedCookies = originParsedCookie.map((cookie) => {
     if (cookie.id == rowId) {
       const name = rowName || cookie.name
       const value = rowValue
@@ -180,8 +180,15 @@ export function updateRowToOriginParsedCookie(
     return cookie
   })
 
-  updatedCookies = updatedCookies.filter((row) => row.name || rowValue)
-  return updatedCookies
+  if (rowValue.indexOf(';') > -1) {
+    const originCookieString = parseToOriginString(newRowParsedCookies)
+    newRowParsedCookies = parseFromOriginString(originCookieString)
+  }
+
+  newRowParsedCookies = newRowParsedCookies.filter(
+    (row) => row.name || rowValue
+  )
+  return newRowParsedCookies
 }
 
 /**

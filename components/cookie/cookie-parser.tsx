@@ -159,6 +159,17 @@ export default function CookieParser() {
   }
 
   const deleteOneRowCookie = (id: string) => {
+    setExpandedRows((prev) => {
+      if (!prev[id]) {
+        return prev
+      }
+
+      return {
+        ...prev,
+        [id]: !prev[id]
+      }
+    })
+
     const updatedCookies = parsedCookies.filter((cookie) => cookie.id !== id)
     setParsedCookies(updatedCookies)
 
