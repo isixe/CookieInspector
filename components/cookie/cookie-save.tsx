@@ -927,7 +927,7 @@ export default function SavedCookies(props: {
                                                 e.target.value
                                               )
                                             }
-                                            className="w-full min-w-20 text-sm"
+                                            className="w-full min-w-20 text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                           />
                                         </TableCell>
                                         <TableCell>
