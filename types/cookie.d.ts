@@ -104,7 +104,6 @@ export interface CookieContextType {
     subValueIndex: number,
     parsedCookies: ParsedCookie[]
   ) => void
-  deleteOneCookie: (id: string) => void
   appendCookieString: (cookieStr: string) => void
   clearSavedCookies: () => void
 }
