@@ -266,6 +266,21 @@ export default function SavedCookies(props: {
 
     const newParsedCookies = parseFromOriginString(newCookieString)
     setEditParsedCookies(newParsedCookies)
+
+    newParsedCookies.forEach((row) => {
+      if (!row.subValues.length) {
+        setExpandedRows((prev) => {
+          if (!prev[row.id]) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            [row.id]: !prev[row.id]
+          }
+        })
+      }
+    })
   }
 
   const preUpdateEditRowCookieValue = (rowId: string, value: string) => {
@@ -308,7 +323,7 @@ export default function SavedCookies(props: {
     subValueIndex: Number,
     newSubValue: string
   ) => {
-    const updatedCookies = editParsedCookies.map((cookie) => {
+    const newParsedCookies = editParsedCookies.map((cookie) => {
       if (cookie.id !== id) {
         return cookie
       }
@@ -341,13 +356,13 @@ export default function SavedCookies(props: {
     })
 
     // Update the edit cookie
-    setEditParsedCookies(updatedCookies)
-    const newCookieString = parseToOriginString(updatedCookies)
+    setEditParsedCookies(newParsedCookies)
+    const newCookieString = parseToOriginString(newParsedCookies)
     setEditCookieString(newCookieString)
   }
 
   const preDeleteEditOneSubCookie = (id: string, subValueIndex: number) => {
-    const updatedCookies = editParsedCookies.map((cookie) => {
+    const newParsedCookies = editParsedCookies.map((cookie) => {
       if (cookie.id !== id) {
         return cookie
       }
@@ -358,18 +373,14 @@ export default function SavedCookies(props: {
       )
 
       let subValuesString = subParseToRowCookieString(originSubValues)
-
-      if (
-        !subValuesString ||
-        (subValueIndex === 0 && subValuesString.length === 1)
-      ) {
-        originSubValues = []
-        toggleRowExpansion(id)
-      }
-
       subValuesString = subValuesString.substring(
         subValuesString.indexOf('=') + 1
       )
+
+      if (originSubValues.length === 1) {
+        originSubValues = []
+        toggleRowExpansion(id)
+      }
 
       return {
         ...cookie,
@@ -380,9 +391,9 @@ export default function SavedCookies(props: {
     })
 
     // Update the edit cookie
-    setEditParsedCookies(updatedCookies)
+    setEditParsedCookies(newParsedCookies)
 
-    const newCookieString = parseToOriginString(updatedCookies)
+    const newCookieString = parseToOriginString(newParsedCookies)
     setEditCookieString(newCookieString)
   }
 
