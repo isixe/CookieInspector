@@ -56,8 +56,23 @@ export default function CookieParser() {
 
   // Parse cookies whenever the cookie string changes
   useEffect(() => {
-    const cookies = parseFromOriginString(originCookieString)
-    setParsedCookies(cookies)
+    const newParsedCookies = parseFromOriginString(originCookieString)
+    setParsedCookies(newParsedCookies)
+
+    newParsedCookies.forEach((row) => {
+      if (!row.subValues.length) {
+        setExpandedRows((prev) => {
+          if (!prev[row.id]) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            [row.id]: !prev[row.id]
+          }
+        })
+      }
+    })
   }, [originCookieString, setParsedCookies])
 
   const toggleRowExpansion = (id: string) => {
