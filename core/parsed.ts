@@ -44,11 +44,15 @@ export function parseFromOriginString(cookieString: string): ParsedCookie[] {
 
   let parsedCookies: ParsedCookie[] = []
 
-  cookieList.forEach((rowCookie, index) => {
-    const rowName = rowCookie.split('=')[0]
-    const rowValue = rowCookie.substring(rowCookie.indexOf('=') + 1)
+  cookieList.forEach((rowCookieString, index) => {
+    const splitIndex = rowCookieString.indexOf('=')
+
+    const rowName = rowCookieString.split('=')[0]
+    const rowValue =
+      splitIndex >= 0 ? rowCookieString.substring(splitIndex + 1) : ''
+
     const type = getStringType(rowValue)
-    const subValues = subParseFromRowCookieString(rowCookie)
+    const subValues = subParseFromRowCookieString(rowCookieString)
 
     const rowParsedCookie = {
       id: `row-${index}`,
@@ -60,6 +64,8 @@ export function parseFromOriginString(cookieString: string): ParsedCookie[] {
 
     parsedCookies.push(rowParsedCookie)
   })
+
+  parsedCookies = parsedCookies.filter((row) => row.name || row.value)
 
   return parsedCookies
 }
