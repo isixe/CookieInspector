@@ -274,16 +274,28 @@ export default function SavedCookies(props: {
       rowId,
       value
     )
-    setEditParsedCookies(newParsedCookies)
 
-    const newCookieString = parseToOriginString(newParsedCookies)
-    setEditCookieString(newCookieString)
-
-    newParsedCookies.forEach((row) => {
+    newParsedCookies.forEach((row, index) => {
       if (!row.subValues.length) {
-        toggleRowExpansion(row.id)
+        setExpandedRows((prev) => {
+          if (!prev[row.id]) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            [row.id]: !prev[row.id]
+          }
+        })
+      }
+
+      if (row.subValues.length === 1) {
+        newParsedCookies[index].subValues = []
       }
     })
+    setEditParsedCookies(newParsedCookies)
+    const newCookieString = parseToOriginString(newParsedCookies)
+    setEditCookieString(newCookieString)
   }
 
   const preDeleteEditRowCookie = (rowId: string) => {
@@ -313,8 +325,6 @@ export default function SavedCookies(props: {
 
       let subValuesString =
         subParseToRowCookieString(originParsedSubValues) || ''
-
-      console.log(subValuesString)
 
       if (subValueIndex === 0 && subValuesString.length === 1) {
         toggleRowExpansion(id)
