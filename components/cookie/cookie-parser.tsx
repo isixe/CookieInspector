@@ -25,6 +25,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
   parseFromOriginString,
   parseToOriginString,
+  subParseToRowCookieString,
   updateRowToOriginParsedCookie
 } from '@/core/parsed'
 import { SavedCookieEntry } from '@/types/cookie'
@@ -170,18 +171,67 @@ export default function CookieParser() {
       }
     })
 
-    const updatedCookies = parsedCookies.filter((cookie) => cookie.id !== id)
-    setParsedCookies(updatedCookies)
+    const newParsedCookies = parsedCookies.filter((cookie) => cookie.id !== id)
+    setParsedCookies(newParsedCookies)
 
-    const newCookieString = parseToOriginString(updatedCookies)
+    const newCookieString = parseToOriginString(newParsedCookies)
     setOriginCookieString(newCookieString)
 
     // Remove from selected if it was selected
     setSelectedCookies((prev) => prev.filter((cookieId) => cookieId !== id))
   }
 
-  const deleteOneSubCookieValue = (cookieId: string, index: number) => {
-    return
+  const deleteOneSubCookieValue = (id: string, subValueIndex: number) => {
+    const newParsedCookies = parsedCookies.map((cookie) => {
+      if (cookie.id !== id) {
+        return cookie
+      }
+
+      // Update a sub-value
+      let originSubValues = cookie.subValues?.filter(
+        (_, index) => index !== subValueIndex
+      )
+
+      let subValuesString = subParseToRowCookieString(originSubValues)
+
+      if (
+        !subValuesString ||
+        (subValueIndex === 0 && subValuesString.length === 1)
+      ) {
+        originSubValues = []
+        toggleRowExpansion(id)
+      }
+
+      subValuesString = subValuesString.substring(
+        subValuesString.indexOf('=') + 1
+      )
+
+      return {
+        ...cookie,
+        name: originSubValues[0]?.name || cookie.name,
+        value: subValuesString,
+        subValues: originSubValues
+      }
+    })
+    setParsedCookies(newParsedCookies)
+
+    const newCookieString = parseToOriginString(newParsedCookies)
+    setOriginCookieString(newCookieString)
+
+    newParsedCookies.forEach((row) => {
+      if (row.subValues.length === 1) {
+        setExpandedRows((prev) => {
+          if (!prev[id]) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            [id]: !prev[id]
+          }
+        })
+      }
+    })
   }
 
   return (
