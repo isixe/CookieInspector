@@ -88,7 +88,9 @@ export function subParseFromRowCookieString(
 
   if (rowCookieString.indexOf('&') > 0) {
     rowCookieString.split('&').forEach((subCookie) => {
-      const [name, value] = subCookie.split('=')
+      const name = subCookie.split('=')[0]
+      const value = subCookie.substring(subCookie.indexOf('=') + 1)
+
       if (name) {
         const subParsedCookie = {
           name,
