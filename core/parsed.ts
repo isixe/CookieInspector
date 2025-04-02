@@ -87,23 +87,25 @@ export function subParseFromRowCookieString(
   let subValues: SubParsedCookie[] = []
 
   if (rowCookieString.indexOf('&') > 0) {
-    rowCookieString.split('&').forEach((subCookie) => {
-      const name = subCookie.split('=')[0]
-      const value = subCookie.substring(subCookie.indexOf('=') + 1)
+    rowCookieString.split('&').forEach((rowCookieString) => {
+      const splitIndex = rowCookieString.indexOf('=')
 
-      if (name) {
-        const subParsedCookie = {
-          name,
-          value: value || '',
-          type: getStringType(value)
-        }
+      const name = rowCookieString.split('=')[0]
+      const value =
+        splitIndex >= 0 ? rowCookieString.substring(splitIndex + 1) : ''
 
+      const subParsedCookie = {
+        name: name || '',
+        value: value || '',
+        type: getStringType(value)
+      }
+
+      if (name || value) {
         subValues.push(subParsedCookie)
       }
     })
+    subValues = subValues.filter((subValue) => subValue !== undefined)
   }
-
-  subValues = subValues.filter((subValue) => subValue !== undefined)
 
   if (subValues.length === 1) {
     return []
