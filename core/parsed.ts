@@ -92,7 +92,7 @@ export function subParseFromRowCookieString(
       if (name) {
         const subParsedCookie = {
           name,
-          value,
+          value: value || '',
           type: getStringType(value)
         }
 
