@@ -84,7 +84,7 @@ export function subParseFromRowCookieString(
     return []
   }
 
-  const subValues: SubParsedCookie[] = []
+  let subValues: SubParsedCookie[] = []
 
   if (rowCookieString.indexOf('&') > 0) {
     rowCookieString.split('&').forEach((subCookie) => {
@@ -101,7 +101,13 @@ export function subParseFromRowCookieString(
     })
   }
 
-  return subValues.filter((subValue) => subValue !== undefined)
+  subValues = subValues.filter((subValue) => subValue !== undefined)
+
+  if (subValues.length === 1) {
+    return []
+  }
+
+  return subValues
 }
 
 /**

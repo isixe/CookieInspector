@@ -275,7 +275,7 @@ export default function SavedCookies(props: {
       value
     )
 
-    newParsedCookies.forEach((row, index) => {
+    newParsedCookies.forEach((row) => {
       if (!row.subValues.length) {
         setExpandedRows((prev) => {
           if (!prev[row.id]) {
@@ -288,11 +288,8 @@ export default function SavedCookies(props: {
           }
         })
       }
-
-      if (row.subValues.length === 1) {
-        newParsedCookies[index].subValues = []
-      }
     })
+
     setEditParsedCookies(newParsedCookies)
     const newCookieString = parseToOriginString(newParsedCookies)
     setEditCookieString(newCookieString)
@@ -425,7 +422,7 @@ export default function SavedCookies(props: {
         </div>
       ) : (
         <div className="flex-1 rounded-md border">
-          <Table className>
+          <Table>
             <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow>
                 <TableHead>Name</TableHead>
