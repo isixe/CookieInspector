@@ -32,7 +32,7 @@ import {
 import { SavedCookieEntry } from '@/types/cookie'
 import { getTypeColor } from '@/utils/stringType'
 import { Check, ChevronDown, ChevronUp, Copy, Save, Trash2 } from 'lucide-react'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { CookieContext } from '../context/cookie-context'
 
 export default function CookieParser() {
@@ -54,27 +54,6 @@ export default function CookieParser() {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
   const [copyClicked, setCopyClicked] = useState(false)
-
-  // Parse cookies whenever the cookie string changes
-  useEffect(() => {
-    const newParsedCookies = parseFromOriginString(originCookieString)
-    setParsedCookies(newParsedCookies)
-
-    newParsedCookies.forEach((row) => {
-      if (!row.subValues.length) {
-        setExpandedRows((prev) => {
-          if (!prev[row.id]) {
-            return prev
-          }
-
-          return {
-            ...prev,
-            [row.id]: !prev[row.id]
-          }
-        })
-      }
-    })
-  }, [originCookieString, setParsedCookies])
 
   const toggleRowExpansion = (id: string) => {
     setExpandedRows((prev) => ({
@@ -164,6 +143,27 @@ export default function CookieParser() {
     setSavedCookies([...savedCookies, newSavedCookie])
   }
 
+  const updateOriginCookieString = (originCookieString: string) => {
+    setOriginCookieString(originCookieString)
+    const newParsedCookies = parseFromOriginString(originCookieString)
+    setParsedCookies(newParsedCookies)
+
+    newParsedCookies.forEach((row) => {
+      if (!row.subValues.length) {
+        setExpandedRows((prev) => {
+          if (!prev[row.id]) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            [row.id]: !prev[row.id]
+          }
+        })
+      }
+    })
+  }
+
   const updateOneRowCookieValue = (id: string, newValue: string) => {
     const newParsedCookie = updateRowToOriginParsedCookie(
       parsedCookies,
@@ -173,6 +173,8 @@ export default function CookieParser() {
 
     const newCookieString = parseToOriginString(newParsedCookie)
     setOriginCookieString(newCookieString)
+    const newParsedCookies = parseFromOriginString(newCookieString)
+    setParsedCookies(newParsedCookies)
   }
 
   const deleteOneRowCookie = (id: string) => {
@@ -303,7 +305,7 @@ export default function CookieParser() {
             id="cookie-input"
             placeholder="Enter your cookie string here (e.g. name=value; name2=value2)"
             value={originCookieString}
-            onChange={(e) => setOriginCookieString(e.target.value)}
+            onChange={(e) => updateOriginCookieString(e.target.value)}
             className="max-h-[150px] min-h-[80px] outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           {originCookieString.length > 0 && (
