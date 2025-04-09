@@ -236,10 +236,8 @@ export default function CookieParser() {
       }
     })
 
-    // Update the edit cookie
     setParsedCookies(newParsedCookies)
     const newCookieString = parseToOriginString(newParsedCookies)
-    // setEditCookieString(newCookieString)
     setOriginCookieString(newCookieString)
   }
 
@@ -256,10 +254,7 @@ export default function CookieParser() {
 
       let subValuesString = subParseToRowCookieString(originSubValues)
 
-      if (
-        !subValuesString ||
-        (subValueIndex === 0 && subValuesString.length === 1)
-      ) {
+      if (originSubValues.length === 1) {
         originSubValues = []
         toggleRowExpansion(id)
       }
