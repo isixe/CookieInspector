@@ -71,8 +71,10 @@ export default function CookieSetting() {
               <Separator />
               <p className="text-sm text-muted-foreground">
                 Cookie Inspector Tool v1.0.0
-                <br />A tool for inspecting, parsing, and managing browser
-                cookies.
+                <br />
+                An open source tool for inspecting, parsing, and managing
+                browser cookies which stored entirely locally.
+                <br />
               </p>
             </div>
           </Card>
