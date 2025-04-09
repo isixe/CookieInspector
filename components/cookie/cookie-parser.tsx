@@ -26,7 +26,8 @@ import {
   parseFromOriginString,
   parseToOriginString,
   subParseToRowCookieString,
-  updateRowToOriginParsedCookie
+  updateRowToOriginParsedCookie,
+  updateSubRowToOriginSubParsedCookie
 } from '@/core/parsed'
 import { SavedCookieEntry } from '@/types/cookie'
 import { getTypeColor } from '@/utils/stringType'
@@ -194,6 +195,50 @@ export default function CookieParser() {
 
     // Remove from selected if it was selected
     setSelectedCookies((prev) => prev.filter((cookieId) => cookieId !== id))
+  }
+
+  const updateOneSubCookieValue = (
+    id: string,
+    subValueIndex: Number,
+    newSubValue: string
+  ) => {
+    const newParsedCookies = parsedCookies.map((cookie) => {
+      if (cookie.id !== id) {
+        return cookie
+      }
+
+      // Update a sub-value
+      let originParsedSubValues = updateSubRowToOriginSubParsedCookie(
+        cookie.subValues,
+        subValueIndex,
+        newSubValue
+      )
+
+      let subValuesString =
+        subParseToRowCookieString(originParsedSubValues) || ''
+
+      if (subValueIndex === 0 && subValuesString.length === 1) {
+        toggleRowExpansion(id)
+        originParsedSubValues = []
+      }
+
+      subValuesString = subValuesString.substring(
+        subValuesString.indexOf('=') + 1
+      )
+
+      return {
+        ...cookie,
+        name: originParsedSubValues[0]?.name || cookie.name,
+        value: subValuesString,
+        subValues: originParsedSubValues
+      }
+    })
+
+    // Update the edit cookie
+    setParsedCookies(newParsedCookies)
+    const newCookieString = parseToOriginString(newParsedCookies)
+    // setEditCookieString(newCookieString)
+    setOriginCookieString(newCookieString)
   }
 
   const deleteOneSubCookieValue = (id: string, subValueIndex: number) => {
@@ -420,8 +465,9 @@ export default function CookieParser() {
                                     <Input
                                       value={subValue.value}
                                       onChange={(e) =>
-                                        updateOneRowCookieValue(
+                                        updateOneSubCookieValue(
                                           cookie.id,
+                                          index,
                                           e.target.value
                                         )
                                       }
