@@ -402,49 +402,52 @@ export default function CookieCompare() {
 
       {/* Compare results */}
       {leftItem && rightItem && (
-        <div className="mt-2 flex flex-1 flex-col rounded-md border">
-          <div className="flex flex-col items-start justify-between gap-2 bg-muted/50 p-4 sm:flex-row sm:items-center">
-            <div>
-              <div className="text-sm text-muted-foreground">
-                {leftItem.label} vs {rightItem.label}
+        <>
+          <div className="flex h-0 flex-1 flex-col rounded-md border">
+            <div className="flex flex-col items-start justify-between gap-2 bg-muted/50 p-4 sm:flex-row sm:items-center">
+              <div>
+                <div className="text-sm text-muted-foreground">
+                  {leftItem.label} vs {rightItem.label}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge>
+                  {compareResults.filter((r) => r.isDifferent).length}{' '}
+                  differences
+                </Badge>
+                <Tabs
+                  value={compareMode}
+                  onValueChange={(value: string) =>
+                    setCompareMode(value as CompareMode)
+                  }
+                  className="sm:ml-4"
+                >
+                  <TabsList className="grid w-full grid-cols-2 sm:w-[180px]">
+                    <TabsTrigger
+                      value="table"
+                      className="flex items-center gap-1"
+                    >
+                      <TableIcon className="h-4 w-4" />
+                      <span>Table</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="text"
+                      className="flex items-center gap-1"
+                    >
+                      <AlignJustify className="h-4 w-4" />
+                      <span>Text</span>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge>
-                {compareResults.filter((r) => r.isDifferent).length} differences
-              </Badge>
-              <Tabs
-                value={compareMode}
-                onValueChange={(value: string) =>
-                  setCompareMode(value as CompareMode)
-                }
-                className="sm:ml-4"
-              >
-                <TabsList className="grid w-full grid-cols-2 sm:w-[180px]">
-                  <TabsTrigger
-                    value="table"
-                    className="flex items-center gap-1"
-                  >
-                    <TableIcon className="h-4 w-4" />
-                    <span>Table</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="text" className="flex items-center gap-1">
-                    <AlignJustify className="h-4 w-4" />
-                    <span>Text</span>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-hidden">
-            {compareMode === 'table' ? (
-              <div className="w-full overflow-auto">
-                <div className="min-w-[640px]">
+            <div className="relative flex-1 overflow-x-auto">
+              {compareMode === 'table' ? (
+                <div className="relative w-full min-w-[640px]">
                   <Table>
-                    <TableHeader>
+                    <TableHeader className="sticky top-0 z-10 bg-background">
                       <TableRow>
-                        <TableHead className="w-[120px]">Cookie Name</TableHead>
+                        <TableHead>Cookie Name</TableHead>
                         <TableHead>Left Value</TableHead>
                         <TableHead>Right Value</TableHead>
                         <TableHead className="w-[100px]">Status</TableHead>
@@ -553,91 +556,91 @@ export default function CookieCompare() {
                     </TableBody>
                   </Table>
                 </div>
-              </div>
-            ) : (
-              <div className="grid h-full grid-cols-1 md:grid-cols-2 md:divide-x">
-                {leftItem &&
-                  rightItem &&
-                  (() => {
-                    const { leftHighlighted, rightHighlighted } =
-                      highlightDifferences(
-                        leftItem.originCookieString,
-                        rightItem.originCookieString
-                      )
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x">
+                  {leftItem &&
+                    rightItem &&
+                    (() => {
+                      const { leftHighlighted, rightHighlighted } =
+                        highlightDifferences(
+                          leftItem.originCookieString,
+                          rightItem.originCookieString
+                        )
 
-                    return (
-                      <>
-                        <div className="h-full overflow-auto p-4">
-                          <div className="mb-2 flex items-center justify-between">
-                            <h3 className="text-sm font-medium">
-                              {leftItem.label}
-                            </h3>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={() =>
-                                handleCopyCookie(
-                                  leftItem.originCookieString,
-                                  leftItem.label
-                                )
-                              }
-                              title="Copy all cookies"
-                            >
-                              {copiedItems[leftItem.label] ? (
-                                <Check className="h-4 w-4" />
-                              ) : (
-                                <Copy className="h-4 w-4" />
-                              )}
-                            </Button>
+                      return (
+                        <>
+                          <div className="overflow-auto p-4">
+                            <div className="mb-2 flex items-center justify-between">
+                              <h3 className="text-sm font-medium">
+                                {leftItem.label}
+                              </h3>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() =>
+                                  handleCopyCookie(
+                                    leftItem.originCookieString,
+                                    leftItem.label
+                                  )
+                                }
+                                title="Copy all cookies"
+                              >
+                                {copiedItems[leftItem.label] ? (
+                                  <Check className="h-4 w-4" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+                            <div className="whitespace-pre-wrap break-all font-mono text-sm">
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: leftHighlighted
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="whitespace-pre-wrap break-all font-mono text-sm">
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: leftHighlighted
-                              }}
-                            />
+                          <div className="overflow-auto p-4">
+                            <div className="mb-2 flex items-center justify-between">
+                              <h3 className="text-sm font-medium">
+                                {rightItem.label}
+                              </h3>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() =>
+                                  handleCopyCookie(
+                                    rightItem.originCookieString,
+                                    rightItem.label
+                                  )
+                                }
+                                title="Copy all cookies"
+                              >
+                                {copiedItems[rightItem.label] ? (
+                                  <Check className="h-4 w-4" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+                            <div className="whitespace-pre-wrap break-all font-mono text-sm">
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: rightHighlighted
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="h-full overflow-auto p-4">
-                          <div className="mb-2 flex items-center justify-between">
-                            <h3 className="text-sm font-medium">
-                              {rightItem.label}
-                            </h3>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={() =>
-                                handleCopyCookie(
-                                  rightItem.originCookieString,
-                                  rightItem.label
-                                )
-                              }
-                              title="Copy all cookies"
-                            >
-                              {copiedItems[rightItem.label] ? (
-                                <Check className="h-4 w-4" />
-                              ) : (
-                                <Copy className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </div>
-                          <div className="whitespace-pre-wrap break-all font-mono text-sm">
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: rightHighlighted
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )
-                  })()}
-              </div>
-            )}
+                        </>
+                      )
+                    })()}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

@@ -432,7 +432,7 @@ export default function SavedCookies(props: {
           No results found for {searchTerm}.
         </div>
       ) : (
-        <div className="flex-1 rounded-md border">
+        <div className="flex-1 overflow-auto rounded-md border">
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow>

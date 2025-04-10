@@ -19,72 +19,85 @@ export default function Home() {
   return (
     <SettingProvider>
       <CookieProvider>
-        <main className="flex h-screen w-screen flex-col overflow-hidden bg-background">
-          <div>
-            <Tabs
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value)}
-              className="flex h-full flex-1 flex-col"
-            >
-              <div className="flex h-full flex-col sm:flex-row">
-                <TabsList className="flex h-auto w-full flex-shrink-0 flex-row justify-center rounded-none border-b bg-muted/30 p-2 sm:h-full sm:w-[100px] sm:flex-col sm:justify-start sm:border-r">
-                  <TabsTrigger
-                    value="parser"
-                    className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    <FileText className="h-5 w-5" />
-                    <span className="text-xs">Parser</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="history"
-                    className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    <History className="h-5 w-5" />
-                    <span className="text-xs">History</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="compare"
-                    className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    <GitCompare className="h-5 w-5" />
-                    <span className="text-xs">Compare</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="saved"
-                    className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    <Save className="h-5 w-5" />
-                    <span className="text-xs">Saved</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="settings"
-                    className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    <Settings className="h-5 w-5" />
-                    <span className="text-xs">Settings</span>
-                  </TabsTrigger>
-                </TabsList>
+        <main className="flex h-screen w-screen flex-col overflow-y-auto bg-background">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value)}
+            className="flex h-full w-full flex-col"
+          >
+            <div className="flex h-full w-full flex-col sm:flex-row">
+              <TabsList className="flex h-auto w-full flex-shrink-0 flex-row justify-center rounded-none border-b bg-muted/30 p-2 sm:h-full sm:w-[100px] sm:flex-col sm:justify-start sm:border-r">
+                <TabsTrigger
+                  value="parser"
+                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <FileText className="h-5 w-5" />
+                  <span className="text-xs">Parser</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="history"
+                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <History className="h-5 w-5" />
+                  <span className="text-xs">History</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="compare"
+                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <GitCompare className="h-5 w-5" />
+                  <span className="text-xs">Compare</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="saved"
+                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Save className="h-5 w-5" />
+                  <span className="text-xs">Saved</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Settings className="h-5 w-5" />
+                  <span className="text-xs">Settings</span>
+                </TabsTrigger>
+              </TabsList>
 
-                <div className="flex-1 overflow-auto p-4 sm:p-6">
-                  <TabsContent value="parser" className="mt-0 h-full">
-                    <CookieParser />
-                  </TabsContent>
-                  <TabsContent value="history" className="mt-0 h-full">
-                    <CookieHistory setActiveTab={setActiveTab} />
-                  </TabsContent>
-                  <TabsContent value="compare" className="mt-0 h-full">
-                    <CookieCompare />
-                  </TabsContent>
-                  <TabsContent value="saved" className="mt-0 h-full">
-                    <SavedCookies setActiveTab={setActiveTab} />
-                  </TabsContent>
-                  <TabsContent value="settings" className="mt-0 h-full">
-                    <CookieSetting />
-                  </TabsContent>
-                </div>
+              <div className="min-h-[calc(100vh-64px)] flex-1 overflow-auto p-4 sm:min-h-screen sm:p-6">
+                <TabsContent
+                  value="parser"
+                  className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
+                >
+                  <CookieParser />
+                </TabsContent>
+                <TabsContent
+                  value="history"
+                  className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
+                >
+                  <CookieHistory setActiveTab={setActiveTab} />
+                </TabsContent>
+                <TabsContent
+                  value="compare"
+                  className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
+                >
+                  <CookieCompare />
+                </TabsContent>
+                <TabsContent
+                  value="saved"
+                  className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
+                >
+                  <SavedCookies setActiveTab={setActiveTab} />
+                </TabsContent>
+                <TabsContent
+                  value="settings"
+                  className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
+                >
+                  <CookieSetting />
+                </TabsContent>
               </div>
-            </Tabs>
-          </div>
+            </div>
+          </Tabs>
         </main>
       </CookieProvider>
     </SettingProvider>

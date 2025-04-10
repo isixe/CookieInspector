@@ -149,7 +149,7 @@ export default function CookieHistory(props: {
             placeholder="Search history..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
+            className="pl-9 outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
           {searchTerm && (

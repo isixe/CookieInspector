@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { AlertTriangle } from 'lucide-react'
 import { useContext, useEffect, useState } from 'react'
@@ -63,76 +62,74 @@ export default function CookieSetting() {
     <div className="flex h-full flex-col space-y-6">
       <h2 className="text-xl font-semibold">Settings</h2>
 
-      <ScrollArea className="flex-1">
-        <div className="space-y-8">
-          <Card className="space-y-4 p-4">
+      <div className="space-y-8">
+        <Card className="space-y-4 p-4">
+          <div className="space-y-2">
+            <h3 className="text-md font-medium">About</h3>
+            <Separator />
+            <p className="text-sm text-muted-foreground">
+              Cookie Inspector Tool v1.0.0
+              <br />
+              An open source tool for inspecting, parsing, and managing browser
+              cookies which stored entirely locally.
+              <br />
+            </p>
+          </div>
+        </Card>
+
+        <Card className="space-y-4 p-4">
+          <div className="space-y-2">
+            <h3 className="text-md font-medium">History</h3>
+            <Separator />
             <div className="space-y-2">
-              <h3 className="text-md font-medium">About</h3>
-              <Separator />
-              <p className="text-sm text-muted-foreground">
-                Cookie Inspector Tool v1.0.0
-                <br />
-                An open source tool for inspecting, parsing, and managing
-                browser cookies which stored entirely locally.
-                <br />
+              <Label htmlFor="history-limit">Maximum history entries</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="history-limit"
+                  type="number"
+                  min="1"
+                  value={historyLimit}
+                  onChange={(e) => setHistoryLimit(e.target.value)}
+                  onBlur={() => handleSave()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                  className="w-28 outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <span className="text-sm text-muted-foreground">entries</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Limit the number of cookie history entries to save. Default is
+                300.
               </p>
             </div>
-          </Card>
+          </div>
+        </Card>
 
-          <Card className="space-y-4 p-4">
-            <div className="space-y-2">
-              <h3 className="text-md font-medium">History</h3>
-              <Separator />
-              <div className="space-y-2">
-                <Label htmlFor="history-limit">Maximum history entries</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="history-limit"
-                    type="number"
-                    min="1"
-                    value={historyLimit}
-                    onChange={(e) => setHistoryLimit(e.target.value)}
-                    onBlur={() => handleSave()}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                    className="w-28 outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                  <span className="text-sm text-muted-foreground">entries</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Limit the number of cookie history entries to save. Default is
-                  300.
-                </p>
+        <Card className="space-y-4 border-destructive/50 p-4">
+          <div className="space-y-2">
+            <h3 className="text-md font-medium text-destructive">
+              Danger Zone
+            </h3>
+            <Separator className="bg-destructive/20" />
+
+            <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-2">
+              <p className="text-sm text-muted-foreground">
+                Reset all application data. This will clear all saved cookies,
+                history, and current cookies.
+              </p>
+              <div className="flex md:justify-end">
+                <Button
+                  variant="destructive"
+                  onClick={() => setResetConfirmOpen(true)}
+                  className="w-full md:w-40"
+                >
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                  Reset All Data
+                </Button>
               </div>
             </div>
-          </Card>
-
-          <Card className="space-y-4 border-destructive/50 p-4">
-            <div className="space-y-2">
-              <h3 className="text-md font-medium text-destructive">
-                Danger Zone
-              </h3>
-              <Separator className="bg-destructive/20" />
-
-              <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-2">
-                <p className="text-sm text-muted-foreground">
-                  Reset all application data. This will clear all saved cookies,
-                  history, and current cookies.
-                </p>
-                <div className="flex md:justify-end">
-                  <Button
-                    variant="destructive"
-                    onClick={() => setResetConfirmOpen(true)}
-                    className="w-full md:w-40"
-                  >
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Reset All Data
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </ScrollArea>
+          </div>
+        </Card>
+      </div>
 
       <AlertDialog open={resetConfirmOpen} onOpenChange={setResetConfirmOpen}>
         <AlertDialogContent>

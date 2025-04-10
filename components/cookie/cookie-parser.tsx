@@ -353,7 +353,7 @@ export default function CookieParser() {
         </div>
       </div>
       {parsedCookies.length > 0 ? (
-        <div className="flex-1 overflow-hidden rounded-md border">
+        <div className="flex-1 overflow-auto rounded-md border">
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow>
@@ -400,7 +400,7 @@ export default function CookieParser() {
                           onChange={(e) =>
                             updateOneRowCookieValue(cookie.id, e.target.value)
                           }
-                          className="text-sm"
+                          className="text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                         />
                         {cookie.subValues && cookie.subValues.length > 0 && (
                           <Button
@@ -468,7 +468,7 @@ export default function CookieParser() {
                                           e.target.value
                                         )
                                       }
-                                      className="w-full text-sm"
+                                      className="w-full text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                     />
                                   </TableCell>
                                   <TableCell>
@@ -526,6 +526,7 @@ export default function CookieParser() {
               <Label htmlFor="cookie-save-name">Name</Label>
               <Input
                 id="cookie-save-name"
+                className="outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder="e.g., Login Cookies"
                 value={cookieName}
                 onChange={(e) => setCookieName(e.target.value)}
@@ -535,6 +536,7 @@ export default function CookieParser() {
               <Label htmlFor="cookie-save-tags">Tags (comma separated)</Label>
               <Input
                 id="cookie-save-tags"
+                className="outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder="e.g., login, production, test"
                 value={cookieTags}
                 onChange={(e) => setCookieTags(e.target.value)}
