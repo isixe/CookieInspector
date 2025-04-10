@@ -2,13 +2,21 @@
  * Cookie string type
  */
 export type CookieType =
-  | 'string'
+  | 'email'
+  | 'url'
+  | 'uuid'
+  | 'date'
   | 'number'
   | 'boolean'
-  | 'date'
+  | 'timestamp'
+  | 'phone'
   | 'json'
-  | 'url'
-  | 'unknown'
+  | 'image'
+  | 'hex'
+  | 'md5'
+  | 'sha1'
+  | 'sha256'
+  | 'string'
 
 export type CompareSource = 'current' | 'history' | 'saved'
 export type CompareMode = 'table' | 'text'

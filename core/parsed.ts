@@ -40,7 +40,7 @@ export function parseFromOriginString(cookieString: string): ParsedCookie[] {
     return []
   }
 
-  const cookieList = cookieString.split(';')
+  const cookieList = cookieString.split(/(?<!data:image\/[a-z+]+);/)
 
   let parsedCookies: ParsedCookie[] = []
 
