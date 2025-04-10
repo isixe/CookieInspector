@@ -1,6 +1,7 @@
 'use client'
 
 import { SettingContext } from '@/components/context/setting-context'
+import { parseFromOriginString } from '@/core/parsed'
 import {
   CookieContextType,
   CookieHistoryEntry,
@@ -173,9 +174,11 @@ export function CookieProvider({ children }: { children: ReactNode }) {
     if (!cookieStr.trim()) return
 
     const currentStr = originCookieString.trim()
-    const newStr = currentStr ? `${currentStr}; ${cookieStr}` : cookieStr
+    const newStr = currentStr ? `${currentStr};${cookieStr}` : cookieStr
 
     setOriginCookieString(newStr)
+    const newParsedCookies = parseFromOriginString(newStr)
+    setParsedCookies(newParsedCookies)
   }
 
   const clearSavedCookies = () => {
