@@ -7,7 +7,10 @@ const defaultSetting: Setting = {
   historyLimit: 300
 }
 
-export const SettingContext = createContext<SettingContextType>(undefined)
+export const SettingContext = createContext<SettingContextType>({
+  setting: { historyLimit: 100 },
+  updateSetting: () => {}
+})
 
 export function SettingProvider({ children }: { children: ReactNode }) {
   const [setting, setSetting] = useState<Setting>(defaultSetting)

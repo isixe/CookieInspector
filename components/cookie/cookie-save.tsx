@@ -70,9 +70,10 @@ export default function SavedCookies(props: {
   const { setActiveTab } = props
   const {
     savedCookies,
-    deleteOneSavedCookie,
-    appendCookieString,
-    updateOneSavedCookie
+    originCookieString,
+    setSavedCookies,
+    setOriginCookieString,
+    setParsedCookies
   } = useContext(CookieContext)
 
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -176,7 +177,19 @@ export default function SavedCookies(props: {
 
   // Update the handleAppend function to switch to the parser tab
   const handleAppend = (entry: SavedCookieEntry) => {
-    appendCookieString(entry.originCookieString)
+    const cookieStr = entry.originCookieString.trim()
+
+    if (!cookieStr) {
+      return
+    }
+
+    const currentStr = originCookieString.trim()
+    const newStr = currentStr ? `${currentStr};${cookieStr}` : cookieStr
+
+    setOriginCookieString(newStr)
+    const newParsedCookies = parseFromOriginString(newStr)
+    setParsedCookies(newParsedCookies)
+
     // Switch to the parser tab
     setActiveTab('parser')
   }
@@ -193,7 +206,10 @@ export default function SavedCookies(props: {
 
   const confirmDelete = () => {
     if (cookieToDelete) {
-      deleteOneSavedCookie(cookieToDelete)
+      const newSavedCookies = savedCookies.filter(
+        (cookie) => cookie.id !== cookieToDelete
+      )
+      setSavedCookies(newSavedCookies)
       setCookieToDelete(null)
     }
     setDeleteConfirmOpen(false)
@@ -248,14 +264,20 @@ export default function SavedCookies(props: {
             .filter((tag) => tag !== '')
         : []
 
-    updateOneSavedCookie(
-      cookieEditId,
-      editName,
-      editTagsList,
-      editCookieString,
-      editParsedCookies,
-      editDescription
-    )
+    const newSaveCookies = savedCookies.map((cookie) => {
+      if (cookie.id === cookieEditId) {
+        return {
+          ...cookie,
+          name: editName,
+          tags: editTagsList,
+          originCookieString: editCookieString,
+          parsedCookies: editParsedCookies,
+          description: editDescription
+        }
+      }
+      return cookie
+    })
+    setSavedCookies(newSaveCookies)
 
     // Reset form and close dialog
     setEditDialogOpen(false)

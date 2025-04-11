@@ -1,7 +1,6 @@
 'use client'
 
 import { SettingContext } from '@/components/context/setting-context'
-import { parseFromOriginString } from '@/core/parsed'
 import {
   CookieContextType,
   CookieHistoryEntry,
@@ -30,12 +29,7 @@ export const CookieContext = createContext<CookieContextType>({
   history: [],
   clearHistory: () => {},
   savedCookies: [],
-  setSavedCookies: () => {},
-  deleteOneSavedCookie: () => {},
-  updateOneSavedCookie: () => {},
-  deleteOneSubCookie: () => {},
-  appendCookieString: () => {},
-  clearSavedCookies: () => {}
+  setSavedCookies: () => {}
 })
 
 export function CookieProvider({ children }: { children: ReactNode }) {
@@ -47,27 +41,6 @@ export function CookieProvider({ children }: { children: ReactNode }) {
   const [savedCookies, setSavedCookies] = useState<SavedCookieEntry[]>([])
 
   const [selectedCookies, setSelectedCookies] = useState<string[]>([])
-  // Load data from localStorage on initial render
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('cookieHistory')
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory))
-    }
-
-    const savedCookiesData = localStorage.getItem('savedCookies')
-    if (savedCookiesData) {
-      setSavedCookies(JSON.parse(savedCookiesData))
-    }
-  }, [])
-
-  // Save data to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem('cookieHistory', JSON.stringify(history))
-  }, [history])
-
-  useEffect(() => {
-    localStorage.setItem('savedCookies', JSON.stringify(savedCookies))
-  }, [savedCookies])
 
   /**
    * Add a new history entry when the cookies is modified
@@ -103,6 +76,29 @@ export function CookieProvider({ children }: { children: ReactNode }) {
     })
   }, [originCookieString, parsedCookies, setting.historyLimit])
 
+  // Load data from localStorage on initial render
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('cookieHistory')
+    const savedCookiesData = localStorage.getItem('savedCookies')
+
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory))
+    }
+
+    if (savedCookiesData) {
+      setSavedCookies(JSON.parse(savedCookiesData))
+    }
+  }, [])
+
+  // Save data to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('cookieHistory', JSON.stringify(history))
+  }, [history])
+
+  useEffect(() => {
+    localStorage.setItem('savedCookies', JSON.stringify(savedCookies))
+  }, [savedCookies])
+
   // Add this effect to automatically save to history when cookies are parsed
   useEffect(() => {
     if (parsedCookies.length > 0) {
@@ -112,77 +108,6 @@ export function CookieProvider({ children }: { children: ReactNode }) {
 
   const clearHistory = () => {
     setHistory([])
-  }
-
-  const deleteOneSavedCookie = (id: string) => {
-    setSavedCookies((prev) => prev.filter((cookie) => cookie.id !== id))
-  }
-
-  // Add function to update a saved cookie
-  const updateOneSavedCookie = (
-    id: string,
-    name: string,
-    tags: string[],
-    originCookieString: string,
-    parsedCookies: ParsedCookie[],
-    description: string
-  ) => {
-    setSavedCookies((prev) =>
-      prev.map((cookie) => {
-        if (cookie.id === id) {
-          return {
-            id,
-            name,
-            tags,
-            timestamp: cookie.timestamp,
-            originCookieString,
-            parsedCookies,
-            description
-          }
-        }
-        return cookie
-      })
-    )
-  }
-
-  const deleteOneSubCookie = (
-    id: string,
-    subValueIndex: number,
-    parsedCookies: ParsedCookie[]
-  ) => {
-    const updatedCookies = parsedCookies.map((cookie) => {
-      if (cookie.id == id) {
-        if (subValueIndex) {
-          // Update a sub-value
-          const originSubValues = cookie.subValues?.filter(
-            (_, index) => index !== subValueIndex
-          )
-
-          console.log(originSubValues)
-          console.log(cookie.subValues)
-          return { ...cookie, subValues: originSubValues }
-        }
-      }
-      return cookie
-    })
-    const newCookieString = updatedCookies
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(';')
-  }
-
-  const appendCookieString = (cookieStr: string) => {
-    if (!cookieStr.trim()) return
-
-    const currentStr = originCookieString.trim()
-    const newStr = currentStr ? `${currentStr};${cookieStr}` : cookieStr
-
-    setOriginCookieString(newStr)
-    const newParsedCookies = parseFromOriginString(newStr)
-    setParsedCookies(newParsedCookies)
-  }
-
-  const clearSavedCookies = () => {
-    setSavedCookies([])
   }
 
   return (
@@ -197,12 +122,7 @@ export function CookieProvider({ children }: { children: ReactNode }) {
         history,
         clearHistory,
         savedCookies,
-        setSavedCookies,
-        deleteOneSavedCookie,
-        updateOneSavedCookie,
-        deleteOneSubCookie,
-        appendCookieString,
-        clearSavedCookies
+        setSavedCookies
       }}
     >
       {children}

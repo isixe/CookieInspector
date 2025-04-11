@@ -98,20 +98,4 @@ export interface CookieContextType {
   clearHistory: () => void
   savedCookies: SavedCookieEntry[]
   setSavedCookies: (cookies: SavedCookieEntry[]) => void
-  deleteOneSavedCookie: (id: string) => void
-  updateOneSavedCookie: (
-    id: string,
-    name: string,
-    tags: string[],
-    originCookieString: string,
-    parsedCookies: ParsedCookie[],
-    description: string
-  ) => void
-  deleteOneSubCookie: (
-    id: string,
-    subValueIndex: number,
-    parsedCookies: ParsedCookie[]
-  ) => void
-  appendCookieString: (cookieStr: string) => void
-  clearSavedCookies: () => void
 }

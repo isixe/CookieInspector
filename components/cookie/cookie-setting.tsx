@@ -30,7 +30,7 @@ export default function CookieSetting() {
     clearHistory,
     setOriginCookieString,
     setParsedCookies,
-    clearSavedCookies
+    setSavedCookies
   } = useContext(CookieContext)
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function CookieSetting() {
   const handleResetAllData = () => {
     // Clear all data
     clearHistory()
-    clearSavedCookies()
+    setSavedCookies([])
     setOriginCookieString('')
     setParsedCookies([])
 
