@@ -1,12 +1,20 @@
 'use client'
 
-import { FileText, GitCompare, History, Save, Settings } from 'lucide-react'
+import {
+  FileText,
+  GitCompare,
+  History,
+  Info,
+  Save,
+  Settings
+} from 'lucide-react'
 import { useState } from 'react'
 
 import { CookieProvider } from '@/components/context/cookie-context'
 import { SettingProvider } from '@/components/context/setting-context'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+import CookieAbout from '@/components/cookie/cookie-about'
 import CookieCompare from '@/components/cookie/cookie-compare'
 import CookieHistory from '@/components/cookie/cookie-history'
 import CookieParser from '@/components/cookie/cookie-parser'
@@ -62,6 +70,13 @@ export default function Home() {
                   <Settings className="h-5 w-5" />
                   <span className="text-xs">Settings</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="about"
+                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Info className="h-5 w-5" />
+                  <span className="text-xs">About</span>
+                </TabsTrigger>
               </TabsList>
 
               <div className="min-h-[calc(100vh-64px)] flex-1 overflow-auto p-4 sm:min-h-screen sm:p-6">
@@ -94,6 +109,12 @@ export default function Home() {
                   className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
                 >
                   <CookieSetting />
+                </TabsContent>
+                <TabsContent
+                  value="about"
+                  className="mt-0 h-full min-h-[calc(100vh-100px)] sm:min-h-[calc(100vh-48px)]"
+                >
+                  <CookieAbout />
                 </TabsContent>
               </div>
             </div>
