@@ -8,11 +8,15 @@ export default function CookieAbout() {
     <div className="mx-auto flex w-full max-w-3xl flex-col">
       {/* Header with logo and title */}
       <div className="flex items-center gap-4 border-b pb-4">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full">
-          <img src="/favicon.ico" alt="Logo" className="h-16 w-16" />
+        <div className="h-50 w-50 flex items-center justify-center rounded-full sm:h-20 sm:w-20">
+          <img
+            src="/favicon.ico"
+            alt="Logo"
+            className="max-h-full max-w-full"
+          />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Cookie Inspector Tool</h1>
+          <h2 className="text-xl font-bold">Cookie Inspector Tool</h2>
           <p className="mt-1 text-muted-foreground">
             An open source tool for inspecting, parsing, and managing browser
             cookies which stored entirely locally.
@@ -29,7 +33,7 @@ export default function CookieAbout() {
       <div className="space-y-4 py-4">
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
+            <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>Official Website</span>
           </div>
           <Button variant="outline" size="sm">
@@ -44,7 +48,7 @@ export default function CookieAbout() {
         </div>
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <GithubIcon size={18} />
+            <GithubIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>Feedback</span>
           </div>
           <Button variant="outline" size="sm" asChild>
@@ -60,7 +64,7 @@ export default function CookieAbout() {
 
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>License</span>
           </div>
           <Button variant="outline" size="sm" asChild>
@@ -76,7 +80,7 @@ export default function CookieAbout() {
 
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+            <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>Email Contact</span>
           </div>
           <Button variant="outline" size="sm" asChild>
