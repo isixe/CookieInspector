@@ -34,45 +34,45 @@ export default function Home() {
             className="flex h-full w-full flex-col"
           >
             <div className="flex h-full w-full flex-col sm:flex-row">
-              <TabsList className="flex h-auto w-full flex-shrink-0 flex-row justify-center rounded-none border-b bg-muted/30 p-2 sm:h-full sm:w-[100px] sm:flex-col sm:justify-start sm:border-r">
+              <TabsList className="flex h-auto w-full flex-shrink-0 flex-row justify-start overflow-x-auto rounded-none border-b bg-muted/30 p-2 sm:h-full sm:w-[100px] sm:flex-col sm:justify-start sm:overflow-y-auto sm:overflow-x-hidden sm:border-r">
                 <TabsTrigger
                   value="parser"
-                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex min-w-[60px] flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:min-w-[84px]"
                 >
                   <FileText className="h-5 w-5" />
                   <span className="text-xs">Parser</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="history"
-                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex min-w-[60px] flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:min-w-[84px]"
                 >
                   <History className="h-5 w-5" />
                   <span className="text-xs">History</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="compare"
-                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex min-w-[60px] flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:min-w-[84px]"
                 >
                   <GitCompare className="h-5 w-5" />
                   <span className="text-xs">Compare</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="saved"
-                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex min-w-[60px] flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:min-w-[84px]"
                 >
                   <Save className="h-5 w-5" />
                   <span className="text-xs">Saved</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="settings"
-                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex min-w-[60px] flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:min-w-[84px]"
                 >
                   <Settings className="h-5 w-5" />
                   <span className="text-xs">Settings</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="about"
-                  className="flex w-full flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex min-w-[60px] flex-col items-center gap-1 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:min-w-[84px]"
                 >
                   <Info className="h-5 w-5" />
                   <span className="text-xs">About</span>
