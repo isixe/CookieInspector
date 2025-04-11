@@ -93,6 +93,16 @@ export default function CookieCompare() {
   const leftItem = getSelectedLeftItem()
   const rightItem = getSelectedRightItem()
 
+  const handleCopyCookie = (text: string, id: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedItems((prev) => ({ ...prev, [id]: true }))
+
+      setTimeout(() => {
+        setCopiedItems((prev) => ({ ...prev, [id]: false }))
+      }, 2000)
+    })
+  }
+
   // Compare cookies
   const compareCookies = (): CompareResult[] => {
     if (!leftItem || !rightItem) {
@@ -106,18 +116,15 @@ export default function CookieCompare() {
     return Array.from(allCookieNames).map((name) => {
       const leftCookie = leftItem.cookies.find((c) => c.name === name)
       const rightCookie = rightItem.cookies.find((c) => c.name === name)
+      const leftValue = leftCookie?.value || ''
+      const rightValue = rightCookie?.value || ''
 
-      const isDifferent: boolean =
-        (!leftCookie && !!rightCookie) ||
-        (!!leftCookie && !rightCookie) ||
-        (!!leftCookie &&
-          !!rightCookie &&
-          leftCookie.value !== rightCookie.value)
+      const isDifferent = leftValue !== rightValue
 
       return {
         name,
-        leftValue: leftCookie?.value || '',
-        rightValue: rightCookie?.value || '',
+        leftValue,
+        rightValue,
         isDifferent
       }
     })
@@ -131,11 +138,11 @@ export default function CookieCompare() {
   ): { leftHighlighted: string; rightHighlighted: string } => {
     // Split cookies while preserving original order
     const leftCookies = leftStr
-      .split(';')
+      .split(/(?<!data:image\/[a-z+]+);/)
       .map((cookie) => cookie.trim())
       .filter(Boolean)
     const rightCookies = rightStr
-      .split(';')
+      .split(/(?<!data:image\/[a-z+]+);/)
       .map((cookie) => cookie.trim())
       .filter(Boolean)
 
@@ -152,8 +159,10 @@ export default function CookieCompare() {
     }
 
     // Parse sub-cookies (parameters within a cookie value)
-    const parseSubCookies = (value: string): Map<string, string> => {
-      const subCookieMap = new Map<string, string>()
+    const parseSubCookies = (
+      value: string
+    ): Array<{ name: string; value: string }> => {
+      const subCookieList = []
 
       // If the value contains & characters, it might have sub-cookies
       if (value.includes('&')) {
@@ -163,15 +172,14 @@ export default function CookieCompare() {
           if (equalsIndex !== -1) {
             const name = subCookie.substring(0, equalsIndex).trim()
             const value = subCookie.substring(equalsIndex + 1).trim()
-            subCookieMap.set(name, value)
+            subCookieList.push({ name, value })
           } else {
-            // Handle case where there's no equals sign
-            subCookieMap.set(subCookie, '')
+            subCookieList.push({ name: subCookie, value: '' })
           }
         }
       }
 
-      return subCookieMap
+      return subCookieList
     }
 
     // Process left cookies
@@ -183,35 +191,59 @@ export default function CookieCompare() {
 
       // If cookie doesn't exist in right side or has no value
       if (rightCookieValue === undefined) {
-        return `<span class="bg-green-100 dark:bg-green-900 px-1 rounded">${name}=${value}</span>`
+        return `${name}=<span class="bg-green-100 dark:bg-green-900 px-1 rounded">${value}</span>`
       }
 
-      // If values are identical, return as is
+      // If values are identical
       if (value === rightCookieValue) {
         return `${name}=${value}`
       }
 
-      // If the cookie value doesn't contain & characters, highlight the whole value
-      if (!value.includes('&') || !rightCookieValue.includes('&')) {
+      const hasLeftSubVal = value.includes('&')
+      const hasRightSubVal = rightCookieValue.includes('&')
+
+      // If both cookie value doesn't contain sub value, but value different
+      if (!hasLeftSubVal && !hasRightSubVal && value !== rightCookieValue) {
         return `${name}=<span class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">${value}</span>`
       }
 
-      // Parse sub-cookies for more precise comparison
-      const leftSubCookies = parseSubCookies(value)
+      // If only one side has sub value
+      if (
+        (hasLeftSubVal && !hasRightSubVal) ||
+        (!hasLeftSubVal && hasRightSubVal)
+      ) {
+        return `${name}=<span class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">${value}</span>`
+      }
+
+      // Both side has sub value, with different value
+
       const rightSubCookies = parseSubCookies(rightCookieValue)
 
       // Reconstruct the value with highlighting for changed sub-cookies
       const subCookieParts = value.split('&').map((part) => {
         const subEqualsIndex = part.indexOf('=')
-        if (subEqualsIndex === -1) return part
+        if (subEqualsIndex === -1) {
+          return part
+        }
 
         const subName = part.substring(0, subEqualsIndex).trim()
         const subValue = part.substring(subEqualsIndex + 1).trim()
 
-        // Check if this sub-cookie exists in right side with different value
-        if (!rightSubCookies.has(subName)) {
+        // Check if this sub-cookie not exists in right side with different value
+        const rightSubHasSubName = rightSubCookies.some(
+          (subCookie) => subCookie.name === subName
+        )
+
+        if (!rightSubHasSubName) {
           return `<span class="bg-green-100 dark:bg-green-900 px-1 rounded">${part}</span>`
-        } else if (rightSubCookies.get(subName) !== subValue) {
+        }
+
+        // Check if this sub-cookie exists in right side with different value
+        const rightHasDifferentSubValue = rightSubCookies.some(
+          (subCookie) =>
+            subCookie.name === subName && subCookie.value === subValue
+        )
+        if (!rightHasDifferentSubValue) {
           return `${subName}=<span class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">${subValue}</span>`
         }
 
@@ -238,27 +270,50 @@ export default function CookieCompare() {
         return `${name}=${value}`
       }
 
-      // If the cookie value doesn't contain & characters, highlight the whole value
-      if (!value.includes('&') || !leftCookieValue.includes('&')) {
+      const hasRightSubVal = value.includes('&')
+      const hasLeftSubVal = leftCookieValue.includes('&')
+
+      // If both cookie value doesn't contain sub value, but value different
+      if (!hasRightSubVal && !hasLeftSubVal && value !== leftCookieValue) {
         return `${name}=<span class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">${value}</span>`
       }
 
-      // Parse sub-cookies for more precise comparison
-      const rightSubCookies = parseSubCookies(value)
+      // If only one side has sub value
+      if (
+        (hasLeftSubVal && !hasRightSubVal) ||
+        (!hasLeftSubVal && hasRightSubVal)
+      ) {
+        return `${name}=<span class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">${value}</span>`
+      }
+
+      // Both side has sub value, with different value
+
       const leftSubCookies = parseSubCookies(leftCookieValue)
 
       // Reconstruct the value with highlighting for changed sub-cookies
       const subCookieParts = value.split('&').map((part) => {
         const subEqualsIndex = part.indexOf('=')
-        if (subEqualsIndex === -1) return part
+        if (subEqualsIndex === -1) {
+          return part
+        }
 
         const subName = part.substring(0, subEqualsIndex).trim()
         const subValue = part.substring(subEqualsIndex + 1).trim()
 
-        // Check if this sub-cookie exists in left side with different value
-        if (!leftSubCookies.has(subName)) {
+        // Check if this sub-cookie not exists in left side with different value
+        const leftSubHasSubName = leftSubCookies.some(
+          (subCookie) => subCookie.name === subName
+        )
+        if (!leftSubHasSubName) {
           return `<span class="bg-green-100 dark:bg-green-900 px-1 rounded">${part}</span>`
-        } else if (leftSubCookies.get(subName) !== subValue) {
+        }
+
+        // Check if this sub-cookie exists in left side with different value
+        const leftHasDifferentSubValue = leftSubCookies.some(
+          (subCookie) =>
+            subCookie.name === subName && subCookie.value === subValue
+        )
+        if (!leftHasDifferentSubValue) {
           return `${subName}=<span class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">${subValue}</span>`
         }
 
@@ -272,18 +327,6 @@ export default function CookieCompare() {
       leftHighlighted: leftHighlighted.join(';\n'),
       rightHighlighted: rightHighlighted.join(';\n')
     }
-  }
-
-  const handleCopyCookie = (text: string, id: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      // Set this specific item as copied
-      setCopiedItems((prev) => ({ ...prev, [id]: true }))
-
-      // Reset the copied state after 2 seconds
-      setTimeout(() => {
-        setCopiedItems((prev) => ({ ...prev, [id]: false }))
-      }, 2000)
-    })
   }
 
   return (
