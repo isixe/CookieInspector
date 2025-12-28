@@ -23,7 +23,9 @@ export async function generateMetadata(): Promise<Metadata> {
         'A tool for inspecting, parsing, and managing browser cookies.',
       url,
       siteName: 'Cookie Inspector',
-      locale: 'en'
+      locale: 'en',
+      type: 'website',
+      images: `${url}/og-image.png`
     }
   }
 }
