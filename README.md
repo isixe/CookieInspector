@@ -1,32 +1,55 @@
 # CookieInspector
 
-CookieInspector is a web tool designed to manage and analyze cookies with a focus on parsing, history tracking, comparison, and saving features.
+CookieInspector is a web-based cookie management and analysis tool built with Next.js. It provides features for parsing, history tracking, comparison, and saving cookies with a clean, modern interface.
+
+## Tech Stack
+
+- **Framework**: Next.js 16
+- **UI Library**: Shadcn-ui
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
 
 ## Features
 
-- **Parser**: Formats cookies and parses their internal values, displaying them in a table format for easy analysis.
-- **History**: Tracks changes to cookies every times, allowing users to review modifications.
-- **Compare**: Compares current cookies with history cookies or saved cookies, then highlights differences.
-- **Saved**: Allows users to select specific or all cookies from the Parser for saving. Supports adding a name, tags, and descriptions. Saved cookies can be updated later.
+| Feature     | Description                                                                                                                       |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Parser**  | Formats cookies and parses their internal values, displaying them in a table format for easy analysis                             |
+| **History** | Tracks changes to cookies over time, allowing users to review modifications                                                       |
+| **Compare** | Compares current cookies with historical or saved cookies, highlighting differences                                               |
+| **Saved**   | Allows selecting specific or all cookies for saving with custom names, tags, and descriptions. Saved cookies can be updated later |
 
 ## Installation
 
-To install the dependencies, run:
+1. Clone the repository:
 
-```bash
-pnpm install
-```
+   ```sh
+   git clone https://github.com/isixe/CookieInspector.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```sh
+   cd CookieInspector
+   ```
+
+3. Install dependencies:
+
+   ```sh
+   pnpm install
+   ```
 
 ## Usage
 
-To start the server, run:
+Start the development server:
 
-```bash
-pnpm run dev
+```sh
+pnpm dev
 ```
 
-The server will start on http://localhost:3000.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+The development server will start at [http://localhost:3000](http://localhost:3000)
 
 ## License
 
-This project is licensed under the [MIT](https://github.com/isixe/CookieInspector?tab=MIT-1-ov-file) License. See the LICENSE file for more details.
+MIT License - see the [LICENSE](LICENSE) file for details.
