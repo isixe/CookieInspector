@@ -46,8 +46,6 @@ Start the development server:
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
 The development server will start at [http://localhost:3000](http://localhost:3000)
 
 ## License
